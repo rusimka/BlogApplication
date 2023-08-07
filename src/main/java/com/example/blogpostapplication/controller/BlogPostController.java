@@ -30,28 +30,26 @@ public class BlogPostController {
   }
 
   @GetMapping("/get-all-blog-posts")
-  public List<SimplifiedBlogPostDTO> getAllBlogPosts(){
+  public List<SimplifiedBlogPostDTO> getAllBlogPosts() {
     return this.blogPostService.getAllBlogPosts();
-}
+  }
 
-@PutMapping("/update-title-and-text/{blogPostId}")
-  public ResponseEntity<BlogPost> updateBlogPostTitleAndText(@PathVariable Long blogPostId, @RequestBody BlogPost blogPost){
-    return ResponseEntity.ok(blogPostService.updateBlogPost(blogPostId,blogPost));
-}
+  @PutMapping("/update-title-and-text/{blogPostId}")
+  public ResponseEntity<BlogPost> updateBlogPostTitleAndText(
+      @PathVariable Long blogPostId, @RequestBody BlogPost blogPost) {
+    return ResponseEntity.ok(blogPostService.updateBlogPost(blogPostId, blogPost));
+  }
 
-@PutMapping(value = "/add-tags/{blogPostId}")
-  public ResponseEntity<String> addTagsToBlog(@PathVariable Long blogPostId, @RequestBody Tag tag){
-    this.tagService.addTagsToBlogPost(blogPostId,tag);
+  @PutMapping(value = "/add-tags/{blogPostId}")
+  public ResponseEntity<String> addTagsToBlog(@PathVariable Long blogPostId, @RequestBody Tag tag) {
+    this.tagService.addTagsToBlogPost(blogPostId, tag);
     return ResponseEntity.ok("Tags are added successfully");
-}
+  }
 
   @DeleteMapping("/delete-tag/{blogPostId}")
-  public ResponseEntity<String> deleteTagFromBlog(@PathVariable Long blogPostId, @RequestBody Tag tag) {
+  public ResponseEntity<String> deleteTagFromBlog(
+      @PathVariable Long blogPostId, @RequestBody Tag tag) {
     this.tagService.deleteTagFromBlogPost(blogPostId, tag);
     return ResponseEntity.ok("Tag is deleted from the blog post");
   }
-
-
-
-
 }

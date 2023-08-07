@@ -6,8 +6,9 @@ import com.example.blogpostapplication.model.dto.SimplifiedBlogPostDTO;
 import java.util.List;
 
 public interface BlogPostService {
-    BlogPost createBlogPost(BlogPost blogPost);
-    List<SimplifiedBlogPostDTO> getAllBlogPosts();
-    BlogPost updateBlogPost(Long blogPostId, BlogPost blogPost);
+  BlogPost createBlogPost(BlogPost blogPost);
 
+  List<SimplifiedBlogPostDTO> getAllBlogPosts();
+
+  BlogPost updateBlogPost(Long blogPostId, BlogPost blogPost);
 }

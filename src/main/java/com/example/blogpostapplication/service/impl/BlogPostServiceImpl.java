@@ -1,16 +1,13 @@
 package com.example.blogpostapplication.service.impl;
 
 import com.example.blogpostapplication.model.BlogPost;
-import com.example.blogpostapplication.model.Tag;
 import com.example.blogpostapplication.model.dto.SimplifiedBlogPostDTO;
 import com.example.blogpostapplication.model.exceptions.BlogPostDoesNotExists;
 import com.example.blogpostapplication.repository.BlogPostRepository;
-import com.example.blogpostapplication.repository.TagRepository;
 import com.example.blogpostapplication.service.BlogPostService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class BlogPostServiceImpl implements BlogPostService {
@@ -29,7 +26,7 @@ public class BlogPostServiceImpl implements BlogPostService {
   @Override
   public List<SimplifiedBlogPostDTO> getAllBlogPosts() {
     List<BlogPost> allBlogPosts = blogPostRepository.findAll();
-    return allBlogPosts.stream().map(this::mapToSimplifiedDTO).collect(Collectors.toList());
+    return allBlogPosts.stream().map(this::mapToSimplifiedDTO).toList();
   }
 
   private SimplifiedBlogPostDTO mapToSimplifiedDTO(BlogPost blogPost) {
@@ -43,7 +40,7 @@ public class BlogPostServiceImpl implements BlogPostService {
     return blogPostText.substring(0, 6);
   }
 
- @Override
+  @Override
   public BlogPost updateBlogPost(Long blogPostId, BlogPost blogPost) {
     BlogPost updatedBlogPost =
         this.blogPostRepository
@@ -53,6 +50,4 @@ public class BlogPostServiceImpl implements BlogPostService {
     updatedBlogPost.setBlogPostText(blogPost.getBlogPostText());
     return this.blogPostRepository.save(updatedBlogPost);
   }
-
-
 }

@@ -14,19 +14,15 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
 @SpringBootTest
-public class BlogPostServiceTest {
+class BlogPostServiceTest {
 
-   @Autowired
-    private  BlogPostService blogPostService;
+  @Autowired private BlogPostService blogPostService;
 
-   @Autowired
-   private  BlogPostRepository blogPostRepository;
+  @Autowired private BlogPostRepository blogPostRepository;
 
-
-    @Test
-  public void testCreateBlogPost() {
+  @Test
+  void testCreateBlogPost() {
     BlogPost blogPost = new BlogPost();
     blogPost.setBlogPostTitle("Test Blog Post");
     blogPost.setBlogPostText("This is a test blog post.");
@@ -41,7 +37,7 @@ public class BlogPostServiceTest {
   }
 
   @Test
-  public void testGetAllBlogPosts() {
+  void testGetAllBlogPosts() {
     BlogPost blogPost1 = new BlogPost();
     blogPost1.setBlogPostTitle("Blog Post 1");
     blogPost1.setBlogPostText("Blog 1 text");
@@ -64,46 +60,41 @@ public class BlogPostServiceTest {
   }
 
   @Test
-  public void testUpdateBlogPost() {
-    // Create a sample BlogPost and save it to the repository
+  void testUpdateBlogPost() {
     BlogPost blogPost = new BlogPost();
     blogPost.setBlogPostTitle("Original Title");
     blogPost.setBlogPostText("Original Text");
     blogPostRepository.save(blogPost);
 
-    // Call the service method to update the BlogPost
     BlogPost updatedBlogPost = new BlogPost();
     updatedBlogPost.setBlogPostTitle("Updated Title");
     updatedBlogPost.setBlogPostText("Updated Text");
     BlogPost result = blogPostService.updateBlogPost(blogPost.getBlogPostId(), updatedBlogPost);
 
-    // Assert that the returned BlogPost is the same as the one returned by the repository
     assertEquals(updatedBlogPost.getBlogPostTitle(), result.getBlogPostTitle());
     assertEquals(updatedBlogPost.getBlogPostText(), result.getBlogPostText());
   }
 
-    @Test
-    public void testUpdateNonExistentBlogPost() {
-        // Attempt to update a non-existent BlogPost
-        BlogPost updatedBlogPost = new BlogPost();
-        updatedBlogPost.setBlogPostTitle("Updated Title");
-        updatedBlogPost.setBlogPostText("Updated Text");
+  @Test
+  void testUpdateNonExistentBlogPost() {
+    BlogPost updatedBlogPost = new BlogPost();
+    updatedBlogPost.setBlogPostTitle("Updated Title");
+    updatedBlogPost.setBlogPostText("Updated Text");
 
-        // Assert that the BlogPostDoesNotExists exception is thrown
-        assertThrows(BlogPostDoesNotExists.class,
-                () -> blogPostService.updateBlogPost(999L, updatedBlogPost));
-    }
+    assertThrows(
+        BlogPostDoesNotExists.class, () -> blogPostService.updateBlogPost(999L, updatedBlogPost));
+  }
 
   @Test
-  public void testToCheckIfBlogPosExists() {
+  void testToCheckIfBlogPosExists() {
     Long nonExistentBlogPostId = 999L;
 
     BlogPost blogPost = new BlogPost();
     blogPost.setBlogPostTitle("Blog post title");
     blogPost.setBlogPostText("Blog post text");
 
-    assertThrows(BlogPostDoesNotExists.class, () -> {
-      blogPostService.updateBlogPost(nonExistentBlogPostId, blogPost);
-    });
+    assertThrows(
+        BlogPostDoesNotExists.class,
+        () -> blogPostService.updateBlogPost(nonExistentBlogPostId, blogPost));
   }
 }

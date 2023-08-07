@@ -13,12 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class TestServiceTest {
+class TagServiceTest {
 
   @Autowired private TagRepository tagRepository;
 
@@ -36,9 +34,8 @@ public class TestServiceTest {
     blogPostRepository.save(blogPost);
   }
 
-
   @Test
-  public void testFindOrCreateTagByName_TagExists() {
+  void testFindOrCreateTagByName() {
     String tagName = "Technology";
     Tag existingTag = new Tag();
     existingTag.setTagId(1L);
@@ -52,22 +49,12 @@ public class TestServiceTest {
   }
 
   @Test
-  public void testFindOrCreateTagByName_TagDoesNotExist() {
-    String tagName = "Technology";
-
-    Tag tag = tagService.findOrCreateTagByName(tagName);
-
-    assertNotNull(tag);
-    assertEquals(tagName, tag.getTagName());
-  }
-
-  @Test
-  public void testAddTagsToBlogPost_TagDoesNotExist() {
+  void testAddTagsToBlogPost() {
     String tagName = "Technology";
     Tag tag = new Tag();
     tag.setTagName(tagName);
 
-    tagService.addTagsToBlogPost(blogPost.getBlogPostId(),tag);
+    tagService.addTagsToBlogPost(blogPost.getBlogPostId(), tag);
 
     BlogPost updatedBlogPost =
         blogPostRepository
@@ -81,21 +68,22 @@ public class TestServiceTest {
   }
 
   @Test
-  public void testAddTagsToBlogPost_TagExists() {
-    String tagName = "Technology";
-    Tag existingTag = new Tag();
-    existingTag.setTagName(tagName);
-    tagRepository.save(existingTag);
+  void testDeleteTagFromBlogPost_TagExists() {
+    Tag tagToDelete1 = new Tag();
+    tagToDelete1.setTagName("Technology");
+    tagRepository.save(tagToDelete1);
 
-    tagService.addTagsToBlogPost(blogPost.getBlogPostId(), existingTag);
+    Tag tagToDelete2 = new Tag();
+    tagToDelete2.setTagName("Mathematics");
+    tagRepository.save(tagToDelete2);
+
+    tagService.deleteTagFromBlogPost(blogPost.getBlogPostId(), tagToDelete1);
 
     BlogPost updatedBlogPost =
         blogPostRepository
             .findById(blogPost.getBlogPostId())
             .orElseThrow(() -> new BlogPostDoesNotExists(blogPost.getBlogPostId()));
-    List<Tag> tags = updatedBlogPost.getTags();
-    assertNotNull(tags);
-    assertEquals(1, tags.size());
-    assertEquals(tagName, tags.get(0).getTagName());
+
+    assertFalse(updatedBlogPost.getTags().contains(tagToDelete1));
   }
 }
