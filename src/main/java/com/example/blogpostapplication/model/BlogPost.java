@@ -20,7 +20,7 @@ public class BlogPost {
     @Column(name = "blog_post_text")
     private String blogPostText;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "blog_post_tags",
             joinColumns = @JoinColumn(name = "blog_post_id"),

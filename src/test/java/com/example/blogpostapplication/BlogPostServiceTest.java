@@ -93,4 +93,17 @@ public class BlogPostServiceTest {
         assertThrows(BlogPostDoesNotExists.class,
                 () -> blogPostService.updateBlogPost(999L, updatedBlogPost));
     }
+
+  @Test
+  public void testToCheckIfBlogPosExists() {
+    Long nonExistentBlogPostId = 999L;
+
+    BlogPost blogPost = new BlogPost();
+    blogPost.setBlogPostTitle("Blog post title");
+    blogPost.setBlogPostText("Blog post text");
+
+    assertThrows(BlogPostDoesNotExists.class, () -> {
+      blogPostService.updateBlogPost(nonExistentBlogPostId, blogPost);
+    });
+  }
 }
