@@ -19,6 +19,10 @@ public class BlogPost {
   @Column(name = "blog_post_text")
   private String blogPostText;
 
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
+
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
       name = "blog_post_tags",
@@ -56,5 +60,13 @@ public class BlogPost {
 
   public void setTags(List<Tag> tags) {
     this.tags = tags;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 }
