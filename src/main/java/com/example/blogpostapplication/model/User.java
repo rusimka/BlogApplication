@@ -26,6 +26,12 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<BlogPost> blogPosts = new ArrayList<>();
 
+    public User(String username, String password, String displayName) {
+        this.username = username;
+        this.password = password;
+        this.displayName = displayName;
+    }
+
 
     public Long getUserId() {
         return userId;
