@@ -5,51 +5,54 @@ import com.example.blogpostapplication.model.Tag;
 import com.example.blogpostapplication.model.dto.SimplifiedBlogPostDTO;
 import com.example.blogpostapplication.service.BlogPostService;
 import com.example.blogpostapplication.service.TagService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/blog-post")
+@RequestMapping("/blog-posts")
+@AllArgsConstructor
 public class BlogPostController {
 
   private final BlogPostService blogPostService;
 
   private final TagService tagService;
 
-  public BlogPostController(BlogPostService blogPostService, TagService tagService) {
-    this.blogPostService = blogPostService;
-    this.tagService = tagService;
-  }
-
-  @PostMapping("/create-blog-post")
+  @PostMapping
   public ResponseEntity<String> createBlogPost(@RequestBody BlogPost blogPost) {
     this.blogPostService.createBlogPost(blogPost);
     return ResponseEntity.ok("Blog post created successfully");
   }
 
-  @GetMapping("/get-all-blog-posts")
+  @GetMapping
   public List<SimplifiedBlogPostDTO> getAllBlogPosts() {
     return this.blogPostService.getAllBlogPosts();
   }
 
-  @PutMapping("/update-title-and-text/{blogPostId}")
+  @PatchMapping("/{blogPostId}")
   public ResponseEntity<BlogPost> updateBlogPostTitleAndText(
-      @PathVariable Long blogPostId, @RequestBody BlogPost blogPost) {
+      @PathVariable Long blogPostId, @RequestBody Map<String, String> blogPost) {
     return ResponseEntity.ok(blogPostService.updateBlogPost(blogPostId, blogPost));
   }
 
-  @PutMapping(value = "/add-tags/{blogPostId}")
+  @GetMapping("/tags/{tagName}")
+  public List<BlogPost> getAllBlogPostByTagName(@PathVariable String tagName) {
+    return this.blogPostService.getAllBlogPostByTagName(tagName);
+  }
+
+  @PutMapping("/{blogPostId}/tags")
   public ResponseEntity<String> addTagsToBlog(@PathVariable Long blogPostId, @RequestBody Tag tag) {
-    this.tagService.addTagsToBlogPost(blogPostId, tag);
+    this.blogPostService.addTagsToBlogPost(blogPostId, tag);
     return ResponseEntity.ok("Tags are added successfully");
   }
 
-  @DeleteMapping("/delete-tag/{blogPostId}")
+  @DeleteMapping("/{blogPostId}/tags")
   public ResponseEntity<String> deleteTagFromBlog(
       @PathVariable Long blogPostId, @RequestBody Tag tag) {
-    this.tagService.deleteTagFromBlogPost(blogPostId, tag);
+    this.blogPostService.deleteTagFromBlogPost(blogPostId, tag);
     return ResponseEntity.ok("Tag is deleted from the blog post");
   }
 }
