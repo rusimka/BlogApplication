@@ -5,5 +5,7 @@ import com.example.blogpostapplication.model.Tag;
 import java.util.Optional;
 
 public interface TagService {
-  Tag findOrCreateTagByName(String tagName);
+  Tag findTagByTagName(String tagName);
+
+  Tag createTag(String tagName);
 }

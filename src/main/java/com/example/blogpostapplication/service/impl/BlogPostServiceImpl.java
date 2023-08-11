@@ -19,8 +19,6 @@ public class BlogPostServiceImpl implements BlogPostService {
 
   private final BlogPostRepository blogPostRepository;
 
-  private final TagRepository tagRepository;
-
   private final TagService tagService;
 
   @Override
@@ -66,27 +64,9 @@ public class BlogPostServiceImpl implements BlogPostService {
     return blogPostRepository.save(updatedBlogPost);
   }
 
-  //  @Override
-  //  public List<BlogPost> getAllBlogPostByTagName(String tagName) {
-  //    Optional<Tag> tag =
-  //        this.tagRepository.findByTagName(
-  //            tagName); // this is the tag needed, for this tag we need to find blogs
-  //    List<BlogPost> blogPosts = new ArrayList<>();
-  //
-  //    if (tag.isPresent()) {
-  //      List<Tag> tags = this.tagRepository.findAll();
-  //      if (tags.contains(tag.get())) {
-  //        blogPosts = tag.get().getBlogPosts();
-  //      }
-  //      return blogPosts;
-  //    }
-  //    return null;
-  //  }
-
   @Override
   public List<BlogPost> getAllBlogPostByTagName(String tagName) {
-    return tagRepository
-        .findByTagName(tagName)
+    return Optional.ofNullable(tagService.findTagByTagName(tagName))
         .map(Tag::getBlogPosts)
         .orElse(Collections.emptyList());
   }
@@ -99,13 +79,7 @@ public class BlogPostServiceImpl implements BlogPostService {
             .findById(blogPostId)
             .orElseThrow(() -> new RecordNotFoundException("Blog post not found"));
 
-    // This is with using Optional functions
-    //    Optional<Tag> newTag = this.findTagByTagName(tag.getTagName());
-    //    if (newTag.isPresent()) {
-    //      blogPost.getTags().add(newTag);
-    //      blogPostRepository.save(blogPost);
-    //    }
-    Tag newTag = tagService.findOrCreateTagByName(tag.getTagName());
+    Tag newTag = tagService.findTagByTagName(tag.getTagName());
 
     blogPost.getTags().add(newTag);
     blogPostRepository.save(blogPost);
@@ -118,17 +92,9 @@ public class BlogPostServiceImpl implements BlogPostService {
             .findById(blogPostId)
             .orElseThrow(() -> new RecordNotFoundException("Blog post not found"));
 
-    Tag tagToDelete = tagService.findOrCreateTagByName(tag.getTagName());
+    Tag tagToDelete = tagService.findTagByTagName(tag.getTagName());
 
     blogPost.getTags().remove(tagToDelete);
     blogPostRepository.save(blogPost);
-
-    // This is with using Optional functions
-    //    Optional<Tag> tagToDelete = tagRepository.findByTagName(tag.getTagName());
-    //    if (tagToDelete.isPresent()) {
-    //      blogPost.getTags().remove(tagToDelete);
-    //      blogPostRepository.save(blogPost);
-    //    }
-
   }
 }
