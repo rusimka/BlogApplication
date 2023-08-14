@@ -22,7 +22,7 @@ public class TagServiceImpl implements TagService {
 
   @Override
   public Tag findTagByTagName(String tagName) {
-    return tagRepository.findByTagName(tagName).orElse(null);
+    return tagRepository.findByTagName(tagName).orElseGet(() -> createTag(tagName));
   }
 
   @Override
