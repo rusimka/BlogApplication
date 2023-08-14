@@ -2,7 +2,8 @@ package com.example.blogpostapplication.controller;
 
 import com.example.blogpostapplication.model.BlogPost;
 import com.example.blogpostapplication.model.Tag;
-import com.example.blogpostapplication.model.dto.SimplifiedBlogPostDTO;
+import com.example.blogpostapplication.model.dto.BlogPostDTO;
+import com.example.blogpostapplication.model.dto.TagDTO;
 import com.example.blogpostapplication.service.BlogPostService;
 import com.example.blogpostapplication.service.TagService;
 import lombok.AllArgsConstructor;
@@ -22,13 +23,13 @@ public class BlogPostController {
   private final TagService tagService;
 
   @PostMapping
-  public ResponseEntity<String> createBlogPost(@RequestBody BlogPost blogPost) {
-    this.blogPostService.createBlogPost(blogPost);
+  public ResponseEntity<String> createBlogPost(@RequestBody BlogPostDTO blogPostDTO) {
+    this.blogPostService.createBlogPost(blogPostDTO);
     return ResponseEntity.ok("Blog post created successfully");
   }
 
   @GetMapping
-  public List<SimplifiedBlogPostDTO> getAllBlogPosts() {
+  public List<BlogPostDTO> getAllBlogPosts() {
     return this.blogPostService.getAllBlogPosts();
   }
 
@@ -44,15 +45,15 @@ public class BlogPostController {
   }
 
   @PutMapping("/{blogPostId}/tags")
-  public ResponseEntity<String> addTagsToBlog(@PathVariable Long blogPostId, @RequestBody Tag tag) {
-    this.blogPostService.addTagsToBlogPost(blogPostId, tag);
+  public ResponseEntity<String> addTagsToBlog(@PathVariable Long blogPostId, @RequestBody TagDTO tagDTO) {
+    this.blogPostService.addTagsToBlogPost(blogPostId, tagDTO);
     return ResponseEntity.ok("Tags are added successfully");
   }
 
   @DeleteMapping("/{blogPostId}/tags")
   public ResponseEntity<String> deleteTagFromBlog(
-      @PathVariable Long blogPostId, @RequestBody Tag tag) {
-    this.blogPostService.deleteTagFromBlogPost(blogPostId, tag);
+      @PathVariable Long blogPostId, @RequestBody TagDTO tagDTO) {
+    this.blogPostService.deleteTagFromBlogPost(blogPostId, tagDTO);
     return ResponseEntity.ok("Tag is deleted from the blog post");
   }
 }
