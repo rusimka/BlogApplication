@@ -6,21 +6,25 @@ import com.example.blogpostapplication.model.dto.BlogPostDTO;
 import com.example.blogpostapplication.model.dto.TagDTO;
 import com.example.blogpostapplication.model.exceptions.RecordNotFoundException;
 import com.example.blogpostapplication.repository.BlogPostRepository;
-import com.example.blogpostapplication.repository.TagRepository;
 import com.example.blogpostapplication.service.BlogPostService;
 import com.example.blogpostapplication.service.TagService;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
-@AllArgsConstructor
 public class BlogPostServiceImpl implements BlogPostService {
 
   private final BlogPostRepository blogPostRepository;
 
   private final TagService tagService;
+
+  private static final String EXCEPTION_TEXT = "Blog post not found";
+
+  public BlogPostServiceImpl(BlogPostRepository blogPostRepository, TagService tagService) {
+    this.blogPostRepository = blogPostRepository;
+    this.tagService = tagService;
+  }
 
   @Override
   public BlogPost createBlogPost(BlogPostDTO blogPostDTO) {
@@ -48,18 +52,16 @@ public class BlogPostServiceImpl implements BlogPostService {
   }
 
   @Override
-  public BlogPost updateBlogPost(Long blogPostId, Map<String, String> blogPost) {
+  public BlogPost updateBlogPost(Long blogPostId, BlogPostDTO blogPostDTO) {
     BlogPost updatedBlogPost =
         this.blogPostRepository
             .findById(blogPostId)
-            .orElseThrow(() -> new RecordNotFoundException("Blog post not found"));
+            .orElseThrow(() -> new RecordNotFoundException(EXCEPTION_TEXT));
 
-    if (blogPost.containsKey("blogPostTitle")) {
-      updatedBlogPost.setBlogPostTitle((String) blogPost.get("blogPostTitle"));
-    }
-    if (blogPost.containsKey("blogPostText")) {
-      updatedBlogPost.setBlogPostText((String) blogPost.get("blogPostText"));
-    }
+    Optional.ofNullable(blogPostDTO.getBlogPostTitle())
+        .ifPresent(updatedBlogPost::setBlogPostTitle);
+
+    Optional.ofNullable(blogPostDTO.getBlogPostText()).ifPresent(updatedBlogPost::setBlogPostText);
 
     return blogPostRepository.save(updatedBlogPost);
   }
@@ -77,7 +79,7 @@ public class BlogPostServiceImpl implements BlogPostService {
     BlogPost blogPost =
         blogPostRepository
             .findById(blogPostId)
-            .orElseThrow(() -> new RecordNotFoundException("Blog post not found"));
+            .orElseThrow(() -> new RecordNotFoundException(EXCEPTION_TEXT));
 
     Tag newTag = tagService.findTagByTagName(tagDTO.getTagName());
 
@@ -90,7 +92,7 @@ public class BlogPostServiceImpl implements BlogPostService {
     BlogPost blogPost =
         blogPostRepository
             .findById(blogPostId)
-            .orElseThrow(() -> new RecordNotFoundException("Blog post not found"));
+            .orElseThrow(() -> new RecordNotFoundException(EXCEPTION_TEXT));
 
     Tag tagToDelete = tagService.findTagByTagName(tagDTO.getTagName());
 
