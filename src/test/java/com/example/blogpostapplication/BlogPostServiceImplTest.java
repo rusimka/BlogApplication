@@ -76,20 +76,24 @@ class BlogPostServiceImplTest {
 
   @Test
   void testGetAllBlogPostByTagName() {
-    Tag tag = mock(Tag.class);
+
+    String tagName = "mathematics";
+    Tag tag = new Tag();
+    tag.setTagName(tagName);
 
     BlogPost blogPost1 = new BlogPost();
     BlogPost blogPost2 = new BlogPost();
-    List<BlogPost> mockedBlogPosts = Arrays.asList(blogPost1, blogPost2);
+    List<BlogPost> blogPosts = Arrays.asList(blogPost1, blogPost2);
 
     when(tagService.findTagByTagName("mathematics")).thenReturn(tag);
-    when(tag.getBlogPosts()).thenReturn(mockedBlogPosts);
+
+    tag.setBlogPosts(blogPosts);
 
 
-    List<BlogPost> result = blogPostService.getAllBlogPostByTagName("mathematics");
+    List<BlogPost> result = blogPostService.getAllBlogPostByTagName(tagName);
 
     assertEquals(blogPost1, result.get(0));
-    assertEquals(blogPost2, result.get(1));;
+    assertEquals(blogPost2, result.get(1));
   }
 
   @Test
