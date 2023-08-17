@@ -8,6 +8,7 @@ import com.example.blogpostapplication.model.exceptions.RecordNotFoundException;
 import com.example.blogpostapplication.repository.BlogPostRepository;
 import com.example.blogpostapplication.service.BlogPostService;
 import com.example.blogpostapplication.service.TagService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,7 +20,10 @@ public class BlogPostServiceImpl implements BlogPostService {
 
   private final TagService tagService;
 
-  private static final String EXCEPTION_TEXT = "Blog post not found";
+  @Value("${blogpost.summary.length}")
+  private int summaryLength;
+
+  private static final String EXCEPTION_TEXT = "Blog post with ID %d not found";
 
   public BlogPostServiceImpl(BlogPostRepository blogPostRepository, TagService tagService) {
     this.blogPostRepository = blogPostRepository;
@@ -48,7 +52,9 @@ public class BlogPostServiceImpl implements BlogPostService {
   }
 
   private String getShortSummary(String blogPostText) {
-    return blogPostText.length() > 20 ? blogPostText.substring(0, 20) + " ..." : blogPostText;
+    return blogPostText.length() > summaryLength
+        ? blogPostText.substring(0, summaryLength) + " ..."
+        : blogPostText;
   }
 
   @Override
@@ -56,7 +62,8 @@ public class BlogPostServiceImpl implements BlogPostService {
     BlogPost updatedBlogPost =
         this.blogPostRepository
             .findById(blogPostId)
-            .orElseThrow(() -> new RecordNotFoundException(EXCEPTION_TEXT));
+            .orElseThrow(
+                () -> new RecordNotFoundException(String.format(EXCEPTION_TEXT, blogPostId)));
 
     Optional.ofNullable(blogPostDTO.getBlogPostTitle())
         .ifPresent(updatedBlogPost::setBlogPostTitle);
@@ -79,7 +86,8 @@ public class BlogPostServiceImpl implements BlogPostService {
     BlogPost blogPost =
         blogPostRepository
             .findById(blogPostId)
-            .orElseThrow(() -> new RecordNotFoundException(EXCEPTION_TEXT));
+            .orElseThrow(
+                () -> new RecordNotFoundException(String.format(EXCEPTION_TEXT, blogPostId)));
 
     Tag newTag = tagService.findTagByTagName(tagDTO.getTagName());
 
@@ -92,7 +100,8 @@ public class BlogPostServiceImpl implements BlogPostService {
     BlogPost blogPost =
         blogPostRepository
             .findById(blogPostId)
-            .orElseThrow(() -> new RecordNotFoundException(EXCEPTION_TEXT));
+            .orElseThrow(
+                () -> new RecordNotFoundException(String.format(EXCEPTION_TEXT, blogPostId)));
 
     Tag tagToDelete = tagService.findTagByTagName(tagDTO.getTagName());
 
