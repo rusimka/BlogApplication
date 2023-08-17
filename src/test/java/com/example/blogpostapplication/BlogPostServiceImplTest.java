@@ -4,6 +4,7 @@ import com.example.blogpostapplication.model.BlogPost;
 import com.example.blogpostapplication.model.Tag;
 import com.example.blogpostapplication.model.dto.BlogPostDTO;
 import com.example.blogpostapplication.model.dto.TagDTO;
+import com.example.blogpostapplication.model.exceptions.RecordNotFoundException;
 import com.example.blogpostapplication.repository.BlogPostRepository;
 import com.example.blogpostapplication.service.TagService;
 import com.example.blogpostapplication.service.impl.BlogPostServiceImpl;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
@@ -89,7 +91,6 @@ class BlogPostServiceImplTest {
 
     tag.setBlogPosts(blogPosts);
 
-
     List<BlogPost> result = blogPostService.getAllBlogPostByTagName(tagName);
 
     assertEquals(blogPost1, result.get(0));
@@ -160,5 +161,61 @@ class BlogPostServiceImplTest {
 
     verify(blogPostRepository, times(1)).save(blogPost);
     assertFalse(blogPost.getTags().contains(tagToDelete));
+  }
+
+  @Test
+  void testMapToSimplifiedDTO() {
+    BlogPost blogPost = new BlogPost();
+    blogPost.setBlogPostTitle("Test Title");
+    blogPost.setBlogPostText("This is a long blog post text that needs to be shortened.");
+
+    ReflectionTestUtils.setField(blogPostService, "summaryLength", 20);
+
+    BlogPostDTO blogPostDTO = blogPostService.mapToSimplifiedDTO(blogPost);
+
+    assertEquals("Test Title", blogPostDTO.getBlogPostTitle());
+    assertEquals("This is a long blog  ...", blogPostDTO.getBlogPostText());
+  }
+
+  @Test
+  void testGetShortSummaryForShortText() {
+    ReflectionTestUtils.setField(blogPostService, "summaryLength", 20);
+
+    String shortText = "Short text.";
+
+    String resultShort = blogPostService.getShortSummary(shortText);
+    assertEquals("Short text.", resultShort);
+  }
+
+  @Test
+  void testGetShortSummaryForLongText() {
+    ReflectionTestUtils.setField(blogPostService, "summaryLength", 20);
+
+    String longText = "This is a long blog post that needs to be summarized.";
+
+    String resultLong = blogPostService.getShortSummary(longText);
+    assertEquals("This is a long blog  ...", resultLong);
+  }
+
+  @Test
+  void testGetBlogPostById() {
+    Long blogPostId = 1L;
+    BlogPost expectedBlogPost = new BlogPost();
+    expectedBlogPost.setBlogPostId(blogPostId);
+
+    when(blogPostRepository.findById(blogPostId)).thenReturn(Optional.of(expectedBlogPost));
+
+    BlogPost result = blogPostService.getBlogPostById(blogPostId);
+
+    assertEquals(expectedBlogPost, result);
+  }
+
+  @Test
+  void testGetBlogPostByIdNotFound() {
+    Long blogPostId = 1L;
+
+    when(blogPostRepository.findById(blogPostId)).thenReturn(Optional.empty());
+
+    assertThrows(RecordNotFoundException.class, () -> blogPostService.getBlogPostById(blogPostId));
   }
 }

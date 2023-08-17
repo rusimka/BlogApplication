@@ -30,6 +30,12 @@ public class BlogPostServiceImpl implements BlogPostService {
     this.tagService = tagService;
   }
 
+  public BlogPost getBlogPostById(Long blogPostId) {
+    return blogPostRepository
+        .findById(blogPostId)
+        .orElseThrow(() -> new RecordNotFoundException(String.format(EXCEPTION_TEXT, blogPostId)));
+  }
+
   @Override
   public BlogPost createBlogPost(BlogPostDTO blogPostDTO) {
     BlogPost blogPost = new BlogPost();
@@ -44,14 +50,14 @@ public class BlogPostServiceImpl implements BlogPostService {
     return allBlogPosts.stream().map(this::mapToSimplifiedDTO).toList();
   }
 
-  private BlogPostDTO mapToSimplifiedDTO(BlogPost blogPost) {
+  public BlogPostDTO mapToSimplifiedDTO(BlogPost blogPost) {
     BlogPostDTO blogPostDTO = new BlogPostDTO();
     blogPostDTO.setBlogPostTitle(blogPost.getBlogPostTitle());
     blogPostDTO.setBlogPostText(getShortSummary(blogPost.getBlogPostText()));
     return blogPostDTO;
   }
 
-  private String getShortSummary(String blogPostText) {
+  public String getShortSummary(String blogPostText) {
     return blogPostText.length() > summaryLength
         ? blogPostText.substring(0, summaryLength) + " ..."
         : blogPostText;
@@ -59,11 +65,7 @@ public class BlogPostServiceImpl implements BlogPostService {
 
   @Override
   public BlogPost updateBlogPost(Long blogPostId, BlogPostDTO blogPostDTO) {
-    BlogPost updatedBlogPost =
-        this.blogPostRepository
-            .findById(blogPostId)
-            .orElseThrow(
-                () -> new RecordNotFoundException(String.format(EXCEPTION_TEXT, blogPostId)));
+    BlogPost updatedBlogPost = getBlogPostById(blogPostId);
 
     Optional.ofNullable(blogPostDTO.getBlogPostTitle())
         .ifPresent(updatedBlogPost::setBlogPostTitle);
@@ -83,11 +85,7 @@ public class BlogPostServiceImpl implements BlogPostService {
   @Override
   public void addTagsToBlogPost(Long blogPostId, TagDTO tagDTO) {
 
-    BlogPost blogPost =
-        blogPostRepository
-            .findById(blogPostId)
-            .orElseThrow(
-                () -> new RecordNotFoundException(String.format(EXCEPTION_TEXT, blogPostId)));
+    BlogPost blogPost = getBlogPostById(blogPostId);
 
     Tag newTag = tagService.findTagByTagName(tagDTO.getTagName());
 
@@ -97,11 +95,7 @@ public class BlogPostServiceImpl implements BlogPostService {
 
   @Override
   public void deleteTagFromBlogPost(Long blogPostId, TagDTO tagDTO) {
-    BlogPost blogPost =
-        blogPostRepository
-            .findById(blogPostId)
-            .orElseThrow(
-                () -> new RecordNotFoundException(String.format(EXCEPTION_TEXT, blogPostId)));
+    BlogPost blogPost = getBlogPostById(blogPostId);
 
     Tag tagToDelete = tagService.findTagByTagName(tagDTO.getTagName());
 
