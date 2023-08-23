@@ -17,7 +17,7 @@ public class User {
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @Column(name = "passowrd", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "display_name",nullable = false)
@@ -30,6 +30,10 @@ public class User {
         this.username = username;
         this.password = password;
         this.displayName = displayName;
+    }
+
+    public User() {
+
     }
 
 
