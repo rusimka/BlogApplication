@@ -2,11 +2,10 @@ package com.example.blogpostapplication.service;
 
 import com.example.blogpostapplication.model.Tag;
 
+import java.util.Optional;
+
 public interface TagService {
+  Tag findTagByTagName(String tagName);
 
-  Tag findOrCreateTagByName(String tagName);
-
-  void addTagsToBlogPost(Long blogPostId, Tag tag);
-
-  void deleteTagFromBlogPost(Long blogPostId, Tag tag);
+  Tag createTag(String tagName);
 }

@@ -1,56 +1,56 @@
 package com.example.blogpostapplication.controller;
 
 import com.example.blogpostapplication.model.BlogPost;
-import com.example.blogpostapplication.model.Tag;
-import com.example.blogpostapplication.model.dto.SimplifiedBlogPostDTO;
+import com.example.blogpostapplication.model.dto.BlogPostDTO;
+import com.example.blogpostapplication.model.dto.TagDTO;
 import com.example.blogpostapplication.service.BlogPostService;
-import com.example.blogpostapplication.service.TagService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/blog-post")
-@CrossOrigin(origins = "*")
+@RequestMapping("/blog-posts")
+@AllArgsConstructor
 public class BlogPostController {
 
   private final BlogPostService blogPostService;
 
-  private final TagService tagService;
 
-  public BlogPostController(BlogPostService blogPostService, TagService tagService) {
-    this.blogPostService = blogPostService;
-    this.tagService = tagService;
-  }
-
-  @PostMapping("/create-blog-post")
-  public ResponseEntity<String> createBlogPost(@RequestBody BlogPost blogPost) {
-    this.blogPostService.createBlogPost(blogPost);
+  @PostMapping
+  public ResponseEntity<String> createBlogPost(@RequestBody BlogPostDTO blogPostDTO) {
+    this.blogPostService.createBlogPost(blogPostDTO);
     return ResponseEntity.ok("Blog post created successfully");
   }
 
-  @GetMapping("/get-all-blog-posts")
-  public List<SimplifiedBlogPostDTO> getAllBlogPosts() {
+  @GetMapping
+  public List<BlogPostDTO> getAllBlogPosts() {
     return this.blogPostService.getAllBlogPosts();
   }
 
-  @PutMapping("/update-title-and-text/{blogPostId}")
+  @PatchMapping("/{blogPostId}")
   public ResponseEntity<BlogPost> updateBlogPostTitleAndText(
-      @PathVariable Long blogPostId, @RequestBody BlogPost blogPost) {
-    return ResponseEntity.ok(blogPostService.updateBlogPost(blogPostId, blogPost));
+      @PathVariable Long blogPostId, @RequestBody BlogPostDTO blogPostDTO) {
+    return ResponseEntity.ok(blogPostService.updateBlogPost(blogPostId, blogPostDTO));
   }
 
-  @PutMapping(value = "/add-tags/{blogPostId}")
-  public ResponseEntity<String> addTagsToBlog(@PathVariable Long blogPostId, @RequestBody Tag tag) {
-    this.tagService.addTagsToBlogPost(blogPostId, tag);
+  @GetMapping("/tags/{tagName}")
+  public List<BlogPost> getAllBlogPostByTagName(@PathVariable String tagName) {
+    return this.blogPostService.getAllBlogPostByTagName(tagName);
+  }
+
+  @PutMapping("/{blogPostId}/tags")
+  public ResponseEntity<String> addTagsToBlog(
+      @PathVariable Long blogPostId, @RequestBody TagDTO tagDTO) {
+    this.blogPostService.addTagsToBlogPost(blogPostId, tagDTO);
     return ResponseEntity.ok("Tags are added successfully");
   }
 
-  @DeleteMapping("/delete-tag/{blogPostId}")
+  @DeleteMapping("/{blogPostId}/tags")
   public ResponseEntity<String> deleteTagFromBlog(
-      @PathVariable Long blogPostId, @RequestBody Tag tag) {
-    this.tagService.deleteTagFromBlogPost(blogPostId, tag);
+      @PathVariable Long blogPostId, @RequestBody TagDTO tagDTO) {
+    this.blogPostService.deleteTagFromBlogPost(blogPostId, tagDTO);
     return ResponseEntity.ok("Tag is deleted from the blog post");
   }
 }

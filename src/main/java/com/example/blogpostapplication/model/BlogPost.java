@@ -1,12 +1,15 @@
 package com.example.blogpostapplication.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table
+@Data
 public class BlogPost {
 
   @Id
@@ -16,7 +19,7 @@ public class BlogPost {
   @Column(name = "blog_post_title")
   private String blogPostTitle;
 
-  @Column(name = "blog_post_text")
+  @Column(name = "blog_post_text", length = 1024)
   private String blogPostText;
 
   @ManyToOne
@@ -28,6 +31,7 @@ public class BlogPost {
       name = "blog_post_tags",
       joinColumns = @JoinColumn(name = "blog_post_id"),
       inverseJoinColumns = @JoinColumn(name = "tag_id"))
+  @JsonIgnore
   private List<Tag> tags = new ArrayList<>();
 
   public Long getBlogPostId() {

@@ -11,6 +11,7 @@
 - A setup guide is included in this README.
 -  The application uses an H2 database with initial bootstrap data.
 
+### Planned versions: 
 ### Version 0.2.0
 -  User management features are introduced.
 - Users can be created with username, password, and display name.
@@ -55,6 +56,15 @@
 - Set up the necessary database (H2, MySQL) as indicated in the application's documentation.
 - Build and run the application according to the provided setup guide.
 
+## Installation steps:
+1. Clone the Repository. First, clone the project repository to your local machine using Git. Open your terminal and run the following command:
+   git clone https://git.scalefocus.com/rusimka.dineva@scalefocus.com/BlogApplication.git
+2. Import Project into IntelliJ IDEA: Open IntelliJ IDEA and click on "Open or Import." Navigate to the cloned project directory and select the pom.xml file. IntelliJ will automatically recognize it as a Maven project and import it.
+3. Build the Project: After importing the project, IntelliJ will start downloading the required dependencies. Once the dependencies are downloaded, open the Maven tool window from the right side of the IDE and run the command "mvn clean install".
+4. Run the Application: You can run the Blog Application using the Spring Boot Run Configuration provided by IntelliJ IDEA. Navigate to the BlogPostApplication class and right-click on it, then select "Run BlogPostApplication."
+5. Access the Application: Once the application is running, you can access it in your web browser by navigating to http://localhost:8080. You should see the home page of the Blog Application.
+6. Access the database: Once the application is running, you can access H2 database console in your web browser by navigating to http://localhost:8080/h2-console. You should see the H2 console,test the connect and connect to database, and you'll be able to see all tables.
+
 ## Documentation
 ###### For detailed information about the REST APIs, please refer to the Swagger documentation included in the application.
 
@@ -66,20 +76,3 @@
 - Maintainer Name: Rusimka Dineva
 - Maintainer Email: rusimka.dineva@scalefocus.com
 ######  We hope you enjoy using and contributing to the Blog Application! Happy coding!
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
