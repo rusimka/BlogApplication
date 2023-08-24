@@ -18,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+// This class makes a single execution for each reques
 public class AuthTokenFilter extends OncePerRequestFilter {
 
   @Autowired private JwtUtils jwtUtils;
@@ -33,25 +34,33 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     try {
       String jwt = parseJwt(request);
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-        String username = jwtUtils.getUserNameFromJwtToken(jwt);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        UsernamePasswordAuthenticationToken authentication =
-            new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (isLogoutRequest(request)) {
+          jwtUtils.invalidateToken(jwt);
+        } else if (!jwtUtils.isTokenInvalidated(jwt)) {
+          String username = jwtUtils.getUserNameFromJwtToken(jwt);
+          UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+          UsernamePasswordAuthenticationToken authentication =
+              new UsernamePasswordAuthenticationToken(userDetails, null, null);
+          authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+          SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
       }
     } catch (Exception e) {
       logger.error("Cannot set user authentication : {}", e);
     }
+
     filterChain.doFilter(request, response);
   }
 
-  private String parseJwt(HttpServletRequest request) {
+  public String parseJwt(HttpServletRequest request) {
     String headerAuth = request.getHeader("Authorization");
     if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
       return headerAuth.substring(7, headerAuth.length());
     }
     return null;
+  }
+
+  private boolean isLogoutRequest(HttpServletRequest request) {
+    return request.getMethod().equals("POST") && request.getRequestURI().equals("/auth/logout");
   }
 }

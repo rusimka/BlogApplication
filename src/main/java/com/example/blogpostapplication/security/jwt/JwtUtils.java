@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
 Two functionalities:
@@ -27,10 +29,12 @@ public class JwtUtils {
   private String jwtSecret;
 
   @Value("${blogpost.app.jwtExpirationMs}")
-  private String jwtExpirationMs;
+  private int jwtExpirationMs;
+
+  private static final Set<String> invalidatedTokens = new HashSet<>(); // Store invalidated tokens here
+
+
   private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
-
-
 
   public String generateJwtToken(Authentication authentication) {
     UserDetailsInterfaceImpl userPrincipal =
@@ -38,17 +42,13 @@ public class JwtUtils {
     return Jwts.builder()
         .setSubject(userPrincipal.getUsername())
         .setIssuedAt(new Date())
-        .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-        .signWith(SignatureAlgorithm.HS256, key())
+        .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
+        .signWith(SignatureAlgorithm.HS512, jwtSecret)
         .compact();
   }
 
-  private Key key() {
-    return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
-  }
-
   public String getUserNameFromJwtToken(String token) {
-    return Jwts.parser().setSigningKey(key()).parseClaimsJwt(token).getBody().getSubject();
+    return (String) Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().get("sub");
   }
 
   public boolean validateJwtToken(String authToken) {
@@ -67,6 +67,14 @@ public class JwtUtils {
       logger.error("JWT claims string is empty: {}", e.getMessage());
     }
     return false;
+  }
+
+  public void invalidateToken(String token) {
+    invalidatedTokens.add(token); // Store the token in the invalidatedTokens set
+  }
+
+  public boolean isTokenInvalidated(String token) {
+    return invalidatedTokens.contains(token); // Check if token is invalidated
   }
 
 

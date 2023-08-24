@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/blog-post")
+@CrossOrigin(origins = "*")
 public class BlogPostController {
 
   private final BlogPostService blogPostService;

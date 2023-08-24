@@ -64,8 +64,20 @@ public class WebSecurityConfig {
             auth ->
                 auth.requestMatchers(new AntPathRequestMatcher("/auth/**"))
                     .permitAll()
-                    .requestMatchers(new AntPathRequestMatcher("/blog-post/**"))
-                    .permitAll() // Your existing configuration
+                    .requestMatchers(new AntPathRequestMatcher("/blog-post"))
+                    .permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/blog-post/create-blog-post"))
+                    .permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/blog-post/get-all-blog-posts"))
+                    .permitAll()
+                    .requestMatchers(
+                        new AntPathRequestMatcher("/blog-post/update-title-and-text/{blogPostId}"))
+                    .permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/blog-post/add-tags/{blogPostId}"))
+                    .permitAll()
+                    .requestMatchers(
+                        new AntPathRequestMatcher("/blog-post/delete-tag/{blogPostId}"))
+                    .permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
                     .permitAll() // Allow access to H2 Console
                     .anyRequest()
@@ -75,6 +87,11 @@ public class WebSecurityConfig {
                 headers
                     .frameOptions()
                     .sameOrigin()); // Disable X-Frame-Options to allow the H2 Console in iframe
+
+    http.authenticationProvider(authenticationProvider());
+
+    http.addFilterBefore(
+        authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build(); // Return the SecurityFilterChain
   }

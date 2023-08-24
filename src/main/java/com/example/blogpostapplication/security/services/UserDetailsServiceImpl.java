@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-// This is for loading the username information
+// This is for loading the username information and returns UserDetails object which later is used for authentication and validation
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
