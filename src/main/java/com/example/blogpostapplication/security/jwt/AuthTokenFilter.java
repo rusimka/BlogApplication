@@ -1,61 +1,60 @@
 package com.example.blogpostapplication.security.jwt;
 
-import com.example.blogpostapplication.model.User;
-import com.example.blogpostapplication.security.services.UserDetailsInterfaceImpl;
 import com.example.blogpostapplication.security.services.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-
-// This class makes a single execution for each reques
+/** This class makes a single execution for each request */
+@RequiredArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
 
-  @Autowired private JwtUtils jwtUtils;
 
-  @Autowired private UserDetailsServiceImpl userDetailsService;
+   private final UserDetailsServiceImpl userDetailsService;
 
-  public AuthTokenFilter() {}
 
   @Override
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
-    try {
-      String jwt = parseJwt(request);
-      if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-        if (isLogoutRequest(request)) {
-          jwtUtils.invalidateToken(jwt);
-        } else if (!jwtUtils.isTokenInvalidated(jwt)) {
-          String username = jwtUtils.getUserNameFromJwtToken(jwt);
-          UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-          UsernamePasswordAuthenticationToken authentication =
-              new UsernamePasswordAuthenticationToken(userDetails, null, null);
-          authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-          SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
+
+    String jwt = parseJwt(request);
+
+    if (jwt != null && JwtUtils.validateJwtToken(jwt)) {
+      if (isLogoutRequest(request)) {
+        JwtUtils.invalidateToken(jwt);
+      } else if (!JwtUtils.isTokenInvalidated(jwt)) {
+        String username = JwtUtils.getUserNameFromJwtToken(jwt);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        UsernamePasswordAuthenticationToken authentication =
+            new UsernamePasswordAuthenticationToken(userDetails, null, null);
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
       }
-    } catch (Exception e) {
-      logger.error("Cannot set user authentication : {}", e);
+    } else {
+      logger.debug("JWT token is invalid or missing");
     }
 
     filterChain.doFilter(request, response);
+
   }
 
   public String parseJwt(HttpServletRequest request) {
     String headerAuth = request.getHeader("Authorization");
     if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-      return headerAuth.substring(7, headerAuth.length());
+      return headerAuth.substring(7);
     }
     return null;
   }

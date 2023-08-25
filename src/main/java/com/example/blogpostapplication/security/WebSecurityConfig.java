@@ -3,7 +3,7 @@ package com.example.blogpostapplication.security;
 import com.example.blogpostapplication.security.jwt.AuthEntryPointJwt;
 import com.example.blogpostapplication.security.jwt.AuthTokenFilter;
 import com.example.blogpostapplication.security.services.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,15 +22,16 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class WebSecurityConfig {
 
-  @Autowired private UserDetailsServiceImpl userDetailsService;
+  private final UserDetailsServiceImpl userDetailsService;
 
-  @Autowired private AuthEntryPointJwt unauthorizedHandler;
+  private final AuthEntryPointJwt unauthorizedHandler;
 
   @Bean
   public AuthTokenFilter authenticationJwtTokenFilter() {
-    return new AuthTokenFilter();
+    return new AuthTokenFilter(userDetailsService);
   }
 
   @Bean

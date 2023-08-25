@@ -2,8 +2,6 @@ package com.example.blogpostapplication.service.impl;
 
 import com.example.blogpostapplication.model.BlogPost;
 import com.example.blogpostapplication.model.Tag;
-import com.example.blogpostapplication.model.dto.BlogPostDTO;
-import com.example.blogpostapplication.model.dto.TagDTO;
 import com.example.blogpostapplication.model.exceptions.RecordNotFoundException;
 import com.example.blogpostapplication.repository.BlogPostRepository;
 import com.example.blogpostapplication.service.BlogPostService;
@@ -11,6 +9,7 @@ import com.example.blogpostapplication.service.TagService;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import com.example.blogpostapplication.model.dto.*;
 
 @Service
 public class BlogPostServiceImpl implements BlogPostService {

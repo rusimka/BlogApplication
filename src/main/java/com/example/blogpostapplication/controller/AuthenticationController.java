@@ -5,15 +5,11 @@ import com.example.blogpostapplication.model.payload.JwtResponse;
 import com.example.blogpostapplication.model.payload.LoginRequest;
 import com.example.blogpostapplication.model.payload.SignupRequest;
 import com.example.blogpostapplication.repository.UserRepository;
-import com.example.blogpostapplication.security.jwt.AuthTokenFilter;
 import com.example.blogpostapplication.security.jwt.JwtUtils;
 import com.example.blogpostapplication.security.services.UserDetailsInterfaceImpl;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,28 +18,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-
-
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class AuthenticationController {
 
-  @Autowired AuthenticationManager authenticationManager;
+  private final AuthenticationManager authenticationManager;
 
-  @Autowired private final UserRepository userRepository;
+  private final UserRepository userRepository;
 
-  @Autowired private final PasswordEncoder passwordEncoder;
+  private final PasswordEncoder passwordEncoder;
 
-  @Autowired JwtUtils jwtUtils;
-
-  @Autowired
-  private AuthTokenFilter authTokenFilter;
-
-  public AuthenticationController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-    this.userRepository = userRepository;
-    this.passwordEncoder = passwordEncoder;
-  }
 
   @PostMapping("/signup")
   public ResponseEntity<String> registerUser(@RequestBody SignupRequest signupRequest) {
@@ -69,7 +55,7 @@ public class AuthenticationController {
                 loginRequest.getUsername(), loginRequest.getPassword()));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
-    String jwt = jwtUtils.generateJwtToken(authentication);
+    String jwt = JwtUtils.generateJwtToken(authentication);
 
     UserDetailsInterfaceImpl userDetails = (UserDetailsInterfaceImpl) authentication.getPrincipal();
 
