@@ -46,7 +46,7 @@ public class BlogPostServiceImpl implements BlogPostService {
     return allBlogPosts.stream().map(this::mapToSimplifiedDTO).toList();
   }
 
-  public BlogPostDTO mapToSimplifiedDTO(BlogPost blogPost) { // bez new na builderot
+  public BlogPostDTO mapToSimplifiedDTO(BlogPost blogPost) {
     return BlogPostDTO.builder()
         .blogPostTitle(blogPost.getBlogPostTitle())
         .blogPostText(getShortSummary(blogPost.getBlogPostText()))
@@ -91,7 +91,6 @@ public class BlogPostServiceImpl implements BlogPostService {
 
   @Override
   public void deleteTagFromBlogPost(Long blogPostId, TagDTO tagDTO) {
-
     BlogPost blogPost = getBlogPostById(blogPostId);
 
     Tag tagToDelete = tagService.findTagByTagName(tagDTO.getTagName());
