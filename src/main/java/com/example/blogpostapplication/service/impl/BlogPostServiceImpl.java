@@ -8,22 +8,18 @@ import com.example.blogpostapplication.model.exceptions.RecordNotFoundException;
 import com.example.blogpostapplication.repository.BlogPostRepository;
 import com.example.blogpostapplication.service.BlogPostService;
 import com.example.blogpostapplication.service.TagService;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Service
 public class BlogPostServiceImpl implements BlogPostService {
 
+  private static final String EXCEPTION_TEXT = "Blog post with ID %d not found";
   private final BlogPostRepository blogPostRepository;
-
   private final TagService tagService;
-
   @Value("${blogpost.summary.length}")
   private int summaryLength;
-
-  private static final String EXCEPTION_TEXT = "Blog post with ID %d not found";
 
   public BlogPostServiceImpl(BlogPostRepository blogPostRepository, TagService tagService) {
     this.blogPostRepository = blogPostRepository;
@@ -38,9 +34,12 @@ public class BlogPostServiceImpl implements BlogPostService {
 
   @Override
   public BlogPost createBlogPost(BlogPostDTO blogPostDTO) {
+    BlogPostDTO.BlogPostDTOBuilder blogPostDTOBuilder = new BlogPostDTO.BlogPostDTOBuilder()
+            .blogPostTitle(blogPostDTO.getBlogPostTitle())
+            .blogPostText(blogPostDTO.getBlogPostText());
     BlogPost blogPost = new BlogPost();
-    blogPost.setBlogPostTitle(blogPostDTO.getBlogPostTitle());
-    blogPost.setBlogPostText(blogPostDTO.getBlogPostText());
+    blogPost.setBlogPostTitle(blogPostDTOBuilder.getBlogPostTitle());
+    blogPost.setBlogPostText(blogPostDTOBuilder.getBlogPostText());
     return this.blogPostRepository.save(blogPost);
   }
 
@@ -51,10 +50,10 @@ public class BlogPostServiceImpl implements BlogPostService {
   }
 
   public BlogPostDTO mapToSimplifiedDTO(BlogPost blogPost) {
-    BlogPostDTO blogPostDTO = new BlogPostDTO();
-    blogPostDTO.setBlogPostTitle(blogPost.getBlogPostTitle());
-    blogPostDTO.setBlogPostText(getShortSummary(blogPost.getBlogPostText()));
-    return blogPostDTO;
+    return new BlogPostDTO.BlogPostDTOBuilder()
+            .blogPostTitle(blogPost.getBlogPostTitle())
+            .blogPostText(getShortSummary(blogPost.getBlogPostText()))
+            .build();
   }
 
   public String getShortSummary(String blogPostText) {
