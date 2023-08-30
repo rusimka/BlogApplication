@@ -18,6 +18,7 @@ public class BlogPostServiceImpl implements BlogPostService {
   private static final String EXCEPTION_TEXT = "Blog post with ID %d not found";
   private final BlogPostRepository blogPostRepository;
   private final TagService tagService;
+
   @Value("${blogpost.summary.length}")
   private int summaryLength;
 
@@ -34,7 +35,8 @@ public class BlogPostServiceImpl implements BlogPostService {
 
   @Override
   public BlogPost createBlogPost(BlogPostDTO blogPostDTO) {
-    BlogPostDTO.BlogPostDTOBuilder blogPostDTOBuilder = new BlogPostDTO.BlogPostDTOBuilder()
+    BlogPostDTO.BlogPostDTOBuilder blogPostDTOBuilder =
+        new BlogPostDTO.BlogPostDTOBuilder()
             .blogPostTitle(blogPostDTO.getBlogPostTitle())
             .blogPostText(blogPostDTO.getBlogPostText());
     BlogPost blogPost = new BlogPost();
@@ -51,9 +53,9 @@ public class BlogPostServiceImpl implements BlogPostService {
 
   public BlogPostDTO mapToSimplifiedDTO(BlogPost blogPost) {
     return new BlogPostDTO.BlogPostDTOBuilder()
-            .blogPostTitle(blogPost.getBlogPostTitle())
-            .blogPostText(getShortSummary(blogPost.getBlogPostText()))
-            .build();
+        .blogPostTitle(blogPost.getBlogPostTitle())
+        .blogPostText(getShortSummary(blogPost.getBlogPostText()))
+        .build();
   }
 
   public String getShortSummary(String blogPostText) {
@@ -84,9 +86,11 @@ public class BlogPostServiceImpl implements BlogPostService {
   @Override
   public void addTagsToBlogPost(Long blogPostId, TagDTO tagDTO) {
 
+    TagDTO.TagDTOBuilder tagDTOBuilder = new TagDTO.TagDTOBuilder().tagName(tagDTO.getTagName());
+
     BlogPost blogPost = getBlogPostById(blogPostId);
 
-    Tag newTag = tagService.findTagByTagName(tagDTO.getTagName());
+    Tag newTag = tagService.findTagByTagName(tagDTOBuilder.getTagName());
 
     blogPost.getTags().add(newTag);
     blogPostRepository.save(blogPost);
@@ -94,9 +98,11 @@ public class BlogPostServiceImpl implements BlogPostService {
 
   @Override
   public void deleteTagFromBlogPost(Long blogPostId, TagDTO tagDTO) {
+    TagDTO.TagDTOBuilder tagDTOBuilder = new TagDTO.TagDTOBuilder().tagName(tagDTO.getTagName());
+
     BlogPost blogPost = getBlogPostById(blogPostId);
 
-    Tag tagToDelete = tagService.findTagByTagName(tagDTO.getTagName());
+    Tag tagToDelete = tagService.findTagByTagName(tagDTOBuilder.getTagName());
 
     blogPost.getTags().remove(tagToDelete);
     blogPostRepository.save(blogPost);
