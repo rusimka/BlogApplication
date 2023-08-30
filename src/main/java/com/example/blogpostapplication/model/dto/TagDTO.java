@@ -7,9 +7,11 @@ public class TagDTO {
 
   private String tagName;
 
-  public TagDTO(TagDTOBuilder tagDTOBuilder){
+  public TagDTO(TagDTOBuilder tagDTOBuilder) {
     this.tagName = tagDTOBuilder.tagName;
-}
+  }
+
+  public TagDTO() {}
 
   public static class TagDTOBuilder {
 
@@ -24,8 +26,8 @@ public class TagDTO {
       return tagName;
     }
 
-    public TagDTO build(){
+    public TagDTO build() {
       return new TagDTO(this);
-}
+    }
   }
 }
