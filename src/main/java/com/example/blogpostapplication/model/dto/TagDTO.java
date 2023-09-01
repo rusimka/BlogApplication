@@ -13,6 +13,10 @@ public class TagDTO {
 
   public TagDTO() {}
 
+  public static TagDTOBuilder builder(){
+    return new TagDTOBuilder();
+  }
+
   public static class TagDTOBuilder {
 
     private String tagName;

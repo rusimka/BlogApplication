@@ -47,7 +47,7 @@ class BlogPostServiceImplTest {
     assertEquals(blogPostDTO.getBlogPostTitle(), result.getBlogPostTitle());
     assertEquals(blogPostDTO.getBlogPostText(), result.getBlogPostText());
 
-    verify(blogPostRepository, times(1)).save(any(BlogPost.class));
+    verify(blogPostRepository, times(1)).save(any());
   }
 
   @Test

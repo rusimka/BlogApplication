@@ -35,13 +35,9 @@ public class BlogPostServiceImpl implements BlogPostService {
 
   @Override
   public BlogPost createBlogPost(BlogPostDTO blogPostDTO) {
-    BlogPostDTO.BlogPostDTOBuilder blogPostDTOBuilder =
-        new BlogPostDTO.BlogPostDTOBuilder()
-            .blogPostTitle(blogPostDTO.getBlogPostTitle())
-            .blogPostText(blogPostDTO.getBlogPostText());
     BlogPost blogPost = new BlogPost();
-    blogPost.setBlogPostTitle(blogPostDTOBuilder.getBlogPostTitle());
-    blogPost.setBlogPostText(blogPostDTOBuilder.getBlogPostText());
+    blogPost.setBlogPostTitle(blogPostDTO.getBlogPostTitle());
+    blogPost.setBlogPostText(blogPostDTO.getBlogPostText());
     return this.blogPostRepository.save(blogPost);
   }
 
@@ -51,8 +47,8 @@ public class BlogPostServiceImpl implements BlogPostService {
     return allBlogPosts.stream().map(this::mapToSimplifiedDTO).toList();
   }
 
-  public BlogPostDTO mapToSimplifiedDTO(BlogPost blogPost) {
-    return new BlogPostDTO.BlogPostDTOBuilder()
+  public BlogPostDTO mapToSimplifiedDTO(BlogPost blogPost) { // bez new na builderot
+    return BlogPostDTO.builder()
         .blogPostTitle(blogPost.getBlogPostTitle())
         .blogPostText(getShortSummary(blogPost.getBlogPostText()))
         .build();
@@ -86,11 +82,9 @@ public class BlogPostServiceImpl implements BlogPostService {
   @Override
   public void addTagsToBlogPost(Long blogPostId, TagDTO tagDTO) {
 
-    TagDTO.TagDTOBuilder tagDTOBuilder = new TagDTO.TagDTOBuilder().tagName(tagDTO.getTagName());
-
     BlogPost blogPost = getBlogPostById(blogPostId);
 
-    Tag newTag = tagService.findTagByTagName(tagDTOBuilder.getTagName());
+    Tag newTag = tagService.findTagByTagName(tagDTO.getTagName());
 
     blogPost.getTags().add(newTag);
     blogPostRepository.save(blogPost);
@@ -98,11 +92,10 @@ public class BlogPostServiceImpl implements BlogPostService {
 
   @Override
   public void deleteTagFromBlogPost(Long blogPostId, TagDTO tagDTO) {
-    TagDTO.TagDTOBuilder tagDTOBuilder = new TagDTO.TagDTOBuilder().tagName(tagDTO.getTagName());
 
     BlogPost blogPost = getBlogPostById(blogPostId);
 
-    Tag tagToDelete = tagService.findTagByTagName(tagDTOBuilder.getTagName());
+    Tag tagToDelete = tagService.findTagByTagName(tagDTO.getTagName());
 
     blogPost.getTags().remove(tagToDelete);
     blogPostRepository.save(blogPost);

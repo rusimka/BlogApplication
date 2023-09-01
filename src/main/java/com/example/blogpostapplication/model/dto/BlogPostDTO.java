@@ -16,6 +16,11 @@ public class BlogPostDTO {
 
   public BlogPostDTO(){}
 
+  public static BlogPostDTOBuilder builder(){
+    return new BlogPostDTOBuilder();
+}
+
+
   public static class BlogPostDTOBuilder {
     private String blogPostTitle;
     private String blogPostText;
@@ -28,14 +33,6 @@ public class BlogPostDTO {
     public BlogPostDTOBuilder blogPostText(String text) {
       this.blogPostText = text;
       return this;
-    }
-
-    public String getBlogPostTitle() {
-      return blogPostTitle;
-    }
-
-    public String getBlogPostText() {
-      return blogPostText;
     }
 
     public BlogPostDTO build() {
