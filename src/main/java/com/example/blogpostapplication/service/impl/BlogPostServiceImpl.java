@@ -74,6 +74,9 @@ public class BlogPostServiceImpl implements BlogPostService {
 
     Optional.ofNullable(blogPostDTO.getBlogPostText()).ifPresent(updatedBlogPost::setBlogPostText);
 
+    updatedBlogPost.setUser(userService.getLoggedUser());
+
+
     return blogPostRepository.save(updatedBlogPost);
   }
 
@@ -89,7 +92,7 @@ public class BlogPostServiceImpl implements BlogPostService {
 
     BlogPost blogPost = getBlogPostById(blogPostId);
 
-    Tag newTag = tagService.findTagByTagName(tagDTO.getTagName());
+    Tag newTag = tagService.createTag(tagDTO.getTagName());
 
     blogPost.getTags().add(newTag);
     blogPostRepository.save(blogPost);

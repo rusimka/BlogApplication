@@ -7,6 +7,7 @@ import com.example.blogpostapplication.model.dto.TagDTO;
 import com.example.blogpostapplication.model.exceptions.RecordNotFoundException;
 import com.example.blogpostapplication.repository.BlogPostRepository;
 import com.example.blogpostapplication.service.TagService;
+import com.example.blogpostapplication.service.UserService;
 import com.example.blogpostapplication.service.impl.BlogPostServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,8 @@ class BlogPostServiceImplTest {
   @Mock private BlogPostRepository blogPostRepository;
 
   @Mock private TagService tagService;
+
+  @Mock private UserService userService;
 
   @Test
   void testCreateBlogPost() {
@@ -134,7 +137,7 @@ class BlogPostServiceImplTest {
     newTag.setTagName(tagName);
 
     when(blogPostRepository.findById(blogPostId)).thenReturn(Optional.of(blogPost));
-    when(tagService.findTagByTagName(tagName)).thenReturn(newTag);
+    when(tagService.createTag(tagName)).thenReturn(newTag);
 
     blogPostService.addTagsToBlogPost(blogPostId, tagDTO);
 
