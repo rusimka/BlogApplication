@@ -2,6 +2,7 @@ package com.example.blogpostapplication.model;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +33,13 @@ public class User {
         this.displayName = displayName;
     }
 
-    public User() {
+    public User() {}
 
+    public User(Long userId,String username, String password, String displayName) {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+        this.displayName = displayName;
     }
 
 

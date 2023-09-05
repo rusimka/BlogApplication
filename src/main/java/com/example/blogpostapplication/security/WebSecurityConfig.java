@@ -75,10 +75,11 @@ public class WebSecurityConfig {
                     .frameOptions()
                     .sameOrigin()); // Disable X-Frame-Options to allow the H2 Console in iframe
 
-    http.authenticationProvider(authenticationProvider());
 
     http.addFilterBefore(
         authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
+    http.authenticationProvider(authenticationProvider());
 
     return http.build(); // Return the SecurityFilterChain
   }

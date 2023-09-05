@@ -7,6 +7,8 @@ import com.example.blogpostapplication.repository.BlogPostRepository;
 import com.example.blogpostapplication.service.BlogPostService;
 import com.example.blogpostapplication.service.TagService;
 import java.util.*;
+
+import com.example.blogpostapplication.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.example.blogpostapplication.model.dto.*;
@@ -18,12 +20,15 @@ public class BlogPostServiceImpl implements BlogPostService {
   private final BlogPostRepository blogPostRepository;
   private final TagService tagService;
 
+  private final UserService userService;
+
   @Value("${blogpost.summary.length}")
   private int summaryLength;
 
-  public BlogPostServiceImpl(BlogPostRepository blogPostRepository, TagService tagService) {
+  public BlogPostServiceImpl(BlogPostRepository blogPostRepository, TagService tagService, UserService userService) {
     this.blogPostRepository = blogPostRepository;
     this.tagService = tagService;
+    this.userService = userService;
   }
 
   public BlogPost getBlogPostById(Long blogPostId) {
@@ -37,6 +42,7 @@ public class BlogPostServiceImpl implements BlogPostService {
     BlogPost blogPost = new BlogPost();
     blogPost.setBlogPostTitle(blogPostDTO.getBlogPostTitle());
     blogPost.setBlogPostText(blogPostDTO.getBlogPostText());
+    blogPost.setUser(userService.getLoggedUser());
     return this.blogPostRepository.save(blogPost);
   }
 
@@ -98,4 +104,11 @@ public class BlogPostServiceImpl implements BlogPostService {
     blogPost.getTags().remove(tagToDelete);
     blogPostRepository.save(blogPost);
   }
+
+  @Override
+  public List<BlogPostDTO> getAllBlogPostsByUserId(Long userId) {
+    return null;
+  }
+
+
 }

@@ -18,4 +18,6 @@ public interface BlogPostService {
   void addTagsToBlogPost(Long blogPostId, TagDTO tagDTO);
 
   void deleteTagFromBlogPost(Long blogPostId, TagDTO tagDTO);
+
+  List<BlogPostDTO> getAllBlogPostsByUserId(Long userId);
 }
