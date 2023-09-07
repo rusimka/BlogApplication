@@ -137,6 +137,7 @@ public class BlogPostServiceImpl implements BlogPostService {
             .orElseThrow(
                 () -> new RecordNotFoundException(String.format(EXCEPTION_TEXT, blogPostId)));
     user.getBlogPosts().remove(blogPostToDelete);
+    blogPostToDelete.setUser(null);
     this.blogPostRepository.deleteById(blogPostId);
   }
 }

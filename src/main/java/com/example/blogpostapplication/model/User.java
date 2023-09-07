@@ -21,7 +21,7 @@ public class User {
   @Column(name = "display_name", nullable = false)
   private String displayName;
 
-  @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL,orphanRemoval = true)
+  @OneToMany(mappedBy = "user", fetch = FetchType.EAGER,orphanRemoval = true)
   private List<BlogPost> blogPosts = new ArrayList<>();
 
   public User(String username, String password, String displayName) {
