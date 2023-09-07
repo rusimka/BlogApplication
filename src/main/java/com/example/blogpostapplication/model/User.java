@@ -1,9 +1,6 @@
 package com.example.blogpostapplication.model;
 
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,75 +8,76 @@ import java.util.List;
 @Table(name = "users")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long userId;
 
-    @Column(name = "username", nullable = false, unique = true)
-    private String username;
+  @Column(name = "username", nullable = false, unique = true)
+  private String username;
 
-    @Column(name = "password", nullable = false)
-    private String password;
+  @Column(name = "password", nullable = false)
+  private String password;
 
-    @Column(name = "display_name",nullable = false)
-    private String displayName;
+  @Column(name = "display_name", nullable = false)
+  private String displayName;
 
-    @OneToMany(mappedBy = "user")
-    private List<BlogPost> blogPosts = new ArrayList<>();
+  @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL,orphanRemoval = true)
+  private List<BlogPost> blogPosts = new ArrayList<>();
 
-    public User(String username, String password, String displayName) {
-        this.username = username;
-        this.password = password;
-        this.displayName = displayName;
-    }
+  public User(String username, String password, String displayName) {
+    this.username = username;
+    this.password = password;
+    this.displayName = displayName;
+  }
 
-    public User() {}
+  public User() {}
 
-    public User(Long userId,String username, String password, String displayName) {
-        this.userId = userId;
-        this.username = username;
-        this.password = password;
-        this.displayName = displayName;
-    }
+  public User(
+      Long userId, String username, String password, String displayName, List<BlogPost> blogPosts) {
+    this.userId = userId;
+    this.username = username;
+    this.password = password;
+    this.displayName = displayName;
+    this.blogPosts = blogPosts;
+  }
 
+  public Long getUserId() {
+    return userId;
+  }
 
-    public Long getUserId() {
-        return userId;
-    }
+  public void setUserId(Long userId) {
+    this.userId = userId;
+  }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+  public String getUsername() {
+    return username;
+  }
 
-    public String getUsername() {
-        return username;
-    }
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+  public String getPassword() {
+    return password;
+  }
 
-    public String getPassword() {
-        return password;
-    }
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+  public String getDisplayName() {
+    return displayName;
+  }
 
-    public String getDisplayName() {
-        return displayName;
-    }
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
+  }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
+  public List<BlogPost> getBlogPosts() {
+    return blogPosts;
+  }
 
-    public List<BlogPost> getBlogPosts() {
-        return blogPosts;
-    }
-
-    public void setBlogPosts(List<BlogPost> blogPosts) {
-        this.blogPosts = blogPosts;
-    }
+  public void setBlogPosts(List<BlogPost> blogPosts) {
+    this.blogPosts = blogPosts;
+  }
 }

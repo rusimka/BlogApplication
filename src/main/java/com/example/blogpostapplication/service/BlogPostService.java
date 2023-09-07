@@ -20,4 +20,9 @@ public interface BlogPostService {
   void deleteTagFromBlogPost(Long blogPostId, TagDTO tagDTO);
 
   List<BlogPostDTO> getAllBlogPostsByUserId(Long userId);
+
+  void deleteAllBlogPostsByUserId();
+
+  void deleteBlogPostByBlogPostId(Long blogPostId);
+
 }

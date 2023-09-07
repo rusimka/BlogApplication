@@ -4,11 +4,11 @@ import com.example.blogpostapplication.model.BlogPost;
 import com.example.blogpostapplication.model.dto.BlogPostDTO;
 import com.example.blogpostapplication.model.dto.TagDTO;
 import com.example.blogpostapplication.service.BlogPostService;
+import java.util.List;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/blog-posts")
@@ -16,7 +16,6 @@ import java.util.List;
 public class BlogPostController {
 
   private final BlogPostService blogPostService;
-
 
   @PostMapping
   public ResponseEntity<String> createBlogPost(@RequestBody BlogPostDTO blogPostDTO) {
@@ -52,5 +51,22 @@ public class BlogPostController {
       @PathVariable Long blogPostId, @RequestBody TagDTO tagDTO) {
     this.blogPostService.deleteTagFromBlogPost(blogPostId, tagDTO);
     return ResponseEntity.ok("Tag is deleted from the blog post");
+  }
+
+  @GetMapping("/users/{userId}")
+  public List<BlogPostDTO> getAllBlogPostsByUserId(@PathVariable Long userId) {
+    return this.blogPostService.getAllBlogPostsByUserId(userId);
+  }
+
+  @DeleteMapping("/delete-all")
+  public ResponseEntity<String> deleteAllBlogPostByUserId() {
+    this.blogPostService.deleteAllBlogPostsByUserId();
+    return ResponseEntity.ok("All blog posts are deleted");
+  }
+
+  @DeleteMapping("/{blogPostId}")
+  public ResponseEntity<String> deleteBlogPostByBlogPostId(@PathVariable Long blogPostId) {
+    this.blogPostService.deleteBlogPostByBlogPostId(blogPostId);
+    return ResponseEntity.ok("Blog post is successfully deleted");
   }
 }
