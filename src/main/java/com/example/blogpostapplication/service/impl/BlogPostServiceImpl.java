@@ -4,6 +4,7 @@ import com.example.blogpostapplication.model.BlogPost;
 import com.example.blogpostapplication.model.Tag;
 import com.example.blogpostapplication.model.User;
 import com.example.blogpostapplication.model.dto.*;
+import com.example.blogpostapplication.model.exceptions.NoBlogPostsFoundException;
 import com.example.blogpostapplication.model.exceptions.RecordNotFoundException;
 import com.example.blogpostapplication.repository.BlogPostRepository;
 import com.example.blogpostapplication.service.BlogPostService;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class BlogPostServiceImpl implements BlogPostService {
 
   private static final String EXCEPTION_TEXT = "Blog post with ID %d not found";
+
   private final BlogPostRepository blogPostRepository;
   private final TagService tagService;
 
@@ -117,15 +119,27 @@ public class BlogPostServiceImpl implements BlogPostService {
         .collect(Collectors.toList());
   }
 
+  // TODO: Response Error Message for this function, similar as error message for 'deleteBlogPostByBlogPostId' function.
+  // TODO : Write jUnit test for this functionality
   @Override
   public void deleteAllBlogPostsByUserId() {
     User user = userService.getLoggedUser();
-    user.getBlogPosts().clear();
-    // ovde napravi proverka dali userot ima ili nema blog posts, dokolku nema pak neka frli
-    // eexception
-    blogPostRepository.deleteBlogPostsByUserId(user.getUserId());
+
+    if (!user.getBlogPosts().isEmpty()) {
+      user.getBlogPosts()
+          .forEach(
+              blogPost -> {
+                blogPost.setUser(null); // Remove the reference to the user
+              });
+
+      user.getBlogPosts().removeAll(user.getBlogPosts());
+      blogPostRepository.deleteBlogPostsByUserId(user.getUserId());
+    } else {
+      throw new NoBlogPostsFoundException(user.getUserId());
+    }
   }
 
+  // TODO : Write jUnit test for this functionality
   @Override
   public void deleteBlogPostByBlogPostId(Long blogPostId) {
 
@@ -140,4 +154,5 @@ public class BlogPostServiceImpl implements BlogPostService {
     blogPostToDelete.setUser(null);
     this.blogPostRepository.deleteById(blogPostId);
   }
+
 }

@@ -1,25 +1,26 @@
 package com.example.blogpostapplication;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import com.example.blogpostapplication.model.BlogPost;
 import com.example.blogpostapplication.model.Tag;
+import com.example.blogpostapplication.model.User;
 import com.example.blogpostapplication.model.dto.BlogPostDTO;
 import com.example.blogpostapplication.model.dto.TagDTO;
+import com.example.blogpostapplication.model.exceptions.NoBlogPostsFoundException;
 import com.example.blogpostapplication.model.exceptions.RecordNotFoundException;
 import com.example.blogpostapplication.repository.BlogPostRepository;
 import com.example.blogpostapplication.service.TagService;
 import com.example.blogpostapplication.service.UserService;
 import com.example.blogpostapplication.service.impl.BlogPostServiceImpl;
+import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BlogPostServiceImplTest {
@@ -221,4 +222,69 @@ class BlogPostServiceImplTest {
 
     assertThrows(RecordNotFoundException.class, () -> blogPostService.getBlogPostById(blogPostId));
   }
+
+  @Test
+  void getAllBlogPostsByUserId() {
+    Long userId = 1L;
+    User user = new User();
+    user.setUserId(userId);
+
+    BlogPost blogPost1 = new BlogPost();
+    blogPost1.setBlogPostTitle("Blog 1 title");
+    blogPost1.setBlogPostText("Blog 1 text");
+
+    List<BlogPost> blogPosts = new ArrayList<>();
+    blogPosts.add(blogPost1);
+    user.setBlogPosts(blogPosts);
+
+    when(userService.findByUserId(userId)).thenReturn(user);
+
+    List<BlogPostDTO> result = blogPostService.getAllBlogPostsByUserId(userId);
+    assertEquals(1, result.size());
+    assertEquals("Blog 1 title", result.get(0).getBlogPostTitle());
+    assertEquals("Blog 1 title", result.get(0).getBlogPostTitle());
+
+    verify(userService, times(1)).findByUserId(userId);
+  }
+
+  @Test
+  void deleteAllBlogPostsByUserId() {
+    User user = new User();
+    user.setUserId(1L);
+
+    BlogPost blogPost = new BlogPost();
+    blogPost.setBlogPostTitle("Blog post title");
+    blogPost.setBlogPostText("Blog post text");
+    List<BlogPost> blogPosts = new ArrayList<>();
+    blogPosts.add(blogPost);
+    user.setBlogPosts(blogPosts);
+
+    when(userService.getLoggedUser()).thenReturn(user);
+    blogPostService.deleteAllBlogPostsByUserId();
+    assertTrue(user.getBlogPosts().isEmpty());
+    verify(blogPostRepository).deleteBlogPostsByUserId(user.getUserId());
+  }
+
+  @Test
+  void deleteAllBlogPostsByUserIdIfNoBlogPostsFound() {
+    User user = new User();
+    user.setUserId(1L);
+
+    user.setBlogPosts(new ArrayList<>());
+
+    when(userService.getLoggedUser()).thenReturn(user);
+    assertThrows(
+        NoBlogPostsFoundException.class,
+        () -> {
+          blogPostService.deleteAllBlogPostsByUserId();
+        });
+
+    // Verify that the user's blog posts are still empty
+    assertTrue(user.getBlogPosts().isEmpty());
+
+    verify(blogPostRepository, never()).deleteBlogPostsByUserId(anyLong());
+  }
+
+
+
 }
