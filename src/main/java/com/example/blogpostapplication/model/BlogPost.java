@@ -24,6 +24,7 @@ public class BlogPost {
 
   @ManyToOne
   @JoinColumn(name = "user_id")
+  @JsonIgnore
   private User user;
 
   @ManyToMany(fetch = FetchType.EAGER)

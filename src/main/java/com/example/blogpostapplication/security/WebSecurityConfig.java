@@ -66,7 +66,9 @@ public class WebSecurityConfig {
                 auth.requestMatchers(new AntPathRequestMatcher("/auth/**"))
                     .permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
-                    .permitAll() // Allow access to H2 Console
+                    .permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/v3/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()// Allow access to H2 Console
                     .anyRequest()
                     .authenticated())
         .headers(
@@ -74,7 +76,6 @@ public class WebSecurityConfig {
                 headers
                     .frameOptions()
                     .sameOrigin()); // Disable X-Frame-Options to allow the H2 Console in iframe
-
 
     http.addFilterBefore(
         authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

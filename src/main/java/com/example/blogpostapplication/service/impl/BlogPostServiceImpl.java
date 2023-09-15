@@ -79,7 +79,7 @@ public class BlogPostServiceImpl implements BlogPostService {
 
     Optional.ofNullable(blogPostDTO.getBlogPostText()).ifPresent(updatedBlogPost::setBlogPostText);
 
-    updatedBlogPost.setUser(userService.getLoggedUser());
+//    updatedBlogPost.setUser(userService.getLoggedUser());
 
     return blogPostRepository.save(updatedBlogPost);
   }
@@ -119,7 +119,7 @@ public class BlogPostServiceImpl implements BlogPostService {
         .collect(Collectors.toList());
   }
 
-  // TODO: Response Error Message for this function, similar as error message for 'deleteBlogPostByBlogPostId' function.
+  // TODO: Response Error Message for this function(if the user doesn't have any blog posts assigned) , similar as error message for 'deleteBlogPostByBlogPostId', function.
   // TODO : Write jUnit test for this functionality
   @Override
   public void deleteAllBlogPostsByUserId() {

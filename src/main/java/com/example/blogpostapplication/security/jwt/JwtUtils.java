@@ -32,12 +32,14 @@ public class JwtUtils {
   public static String generateJwtToken(Authentication authentication) {
     UserDetailsInterfaceImpl userPrincipal =
         (UserDetailsInterfaceImpl) authentication.getPrincipal();
-    return Jwts.builder()
+    String jwtToken =  Jwts.builder()
         .setSubject(userPrincipal.getUsername())
         .setIssuedAt(new Date())
         .setExpiration(new Date(new Date().getTime() + jwtConfigProperties.getJwtExpirationMs()))
         .signWith(SignatureAlgorithm.HS512, jwtConfigProperties.getJwtSecret())
         .compact();
+    System.out.println(jwtToken);
+    return jwtToken;
   }
 
   public static String getUserNameFromJwtToken(String token) {
