@@ -12,6 +12,8 @@ import com.example.blogpostapplication.service.TagService;
 import com.example.blogpostapplication.service.UserService;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +21,9 @@ import org.springframework.stereotype.Service;
 public class BlogPostServiceImpl implements BlogPostService {
 
   private static final String EXCEPTION_TEXT = "Blog post with ID %d not found";
-
+  private static final Logger logger = LoggerFactory.getLogger(BlogPostServiceImpl.class);
   private final BlogPostRepository blogPostRepository;
   private final TagService tagService;
-
   private final UserService userService;
 
   @Value("${blogpost.summary.length}")
@@ -36,9 +37,14 @@ public class BlogPostServiceImpl implements BlogPostService {
   }
 
   public BlogPost getBlogPostById(Long blogPostId) {
+    logger.info("Attempting to retrieve blog post with id {}", blogPostId);
     return blogPostRepository
         .findById(blogPostId)
-        .orElseThrow(() -> new RecordNotFoundException(String.format(EXCEPTION_TEXT, blogPostId)));
+        .orElseThrow(
+            () -> {
+              logger.error("Blog post with ID {} doesn't exists", blogPostId);
+              return new RecordNotFoundException(String.format(EXCEPTION_TEXT, blogPostId));
+            });
   }
 
   @Override
@@ -47,12 +53,13 @@ public class BlogPostServiceImpl implements BlogPostService {
     blogPost.setBlogPostTitle(blogPostDTO.getBlogPostTitle());
     blogPost.setBlogPostText(blogPostDTO.getBlogPostText());
     blogPost.setUser(userService.getLoggedUser());
-    //    userService.getLoggedUser().getBlogPosts().add(blogPost);
+    logger.info("New blog post created with title: '{}'", blogPost.getBlogPostTitle());
     return this.blogPostRepository.save(blogPost);
   }
 
   @Override
   public List<BlogPostDTO> getAllBlogPosts() {
+    logger.info("Attempting to retrieve all blog posts");
     List<BlogPost> allBlogPosts = blogPostRepository.findAll();
     return allBlogPosts.stream().map(this::mapToSimplifiedDTO).toList();
   }
@@ -75,12 +82,18 @@ public class BlogPostServiceImpl implements BlogPostService {
     BlogPost updatedBlogPost = getBlogPostById(blogPostId);
 
     Optional.ofNullable(blogPostDTO.getBlogPostTitle())
-        .ifPresent(updatedBlogPost::setBlogPostTitle);
+        .ifPresent(
+            title -> {
+              updatedBlogPost.setBlogPostTitle(title);
+              logger.info("Updated title of blog post with ID {}: '{}'", blogPostId, title);
+            });
 
-    Optional.ofNullable(blogPostDTO.getBlogPostText()).ifPresent(updatedBlogPost::setBlogPostText);
-
-//    updatedBlogPost.setUser(userService.getLoggedUser());
-
+    Optional.ofNullable(blogPostDTO.getBlogPostText())
+        .ifPresent(
+            text -> {
+              updatedBlogPost.setBlogPostText(text);
+              logger.info("Updated text of blog post with ID {}: '{}'", blogPostId, text);
+            });
     return blogPostRepository.save(updatedBlogPost);
   }
 
@@ -100,6 +113,7 @@ public class BlogPostServiceImpl implements BlogPostService {
 
     blogPost.getTags().add(newTag);
     blogPostRepository.save(blogPost);
+    logger.info("Tag '{}' added to blog post with ID {}", newTag.getTagName(), blogPostId);
   }
 
   @Override
@@ -110,16 +124,19 @@ public class BlogPostServiceImpl implements BlogPostService {
 
     blogPost.getTags().remove(tagToDelete);
     blogPostRepository.save(blogPost);
+    logger.info("Tag '{}' removed from blog post with ID {}", tagToDelete.getTagName(), blogPostId);
   }
 
   @Override
   public List<BlogPostDTO> getAllBlogPostsByUserId(Long userId) {
+    logger.info("Attempting to get all blog posts for user with id {}", userId);
     return userService.findByUserId(userId).getBlogPosts().stream()
         .map(this::mapToSimplifiedDTO)
         .collect(Collectors.toList());
   }
 
-  // TODO: Response Error Message for this function(if the user doesn't have any blog posts assigned) , similar as error message for 'deleteBlogPostByBlogPostId', function.
+  // TODO: Response Error Message for this function(if the user doesn't have any blog posts
+  // assigned) , similar as error message for 'deleteBlogPostByBlogPostId', function.
   // TODO : Write jUnit test for this functionality
   @Override
   public void deleteAllBlogPostsByUserId() {
@@ -134,7 +151,10 @@ public class BlogPostServiceImpl implements BlogPostService {
 
       user.getBlogPosts().removeAll(user.getBlogPosts());
       blogPostRepository.deleteBlogPostsByUserId(user.getUserId());
+      logger.info("All blog posts for user with ID {} have been deleted.", user.getUserId());
+
     } else {
+      logger.error("No blog posts found for user with ID {}. Unable to delete.", user.getUserId());
       throw new NoBlogPostsFoundException(user.getUserId());
     }
   }
@@ -149,10 +169,14 @@ public class BlogPostServiceImpl implements BlogPostService {
             .filter(blogPost -> blogPost.getBlogPostId().equals(blogPostId))
             .findFirst()
             .orElseThrow(
-                () -> new RecordNotFoundException(String.format(EXCEPTION_TEXT, blogPostId)));
+                () -> {
+                  logger.error(
+                      "Failed to delete blog post with ID {}. Blog post not found.", blogPostId);
+                  return new RecordNotFoundException(String.format(EXCEPTION_TEXT, blogPostId));
+                });
     user.getBlogPosts().remove(blogPostToDelete);
     blogPostToDelete.setUser(null);
     this.blogPostRepository.deleteById(blogPostId);
+    logger.info("Blog post with ID {} has been deleted.", blogPostId);
   }
-
 }
