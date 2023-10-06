@@ -1,7 +1,7 @@
 package com.example.blogpostapplication;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,5 +59,56 @@ class TagServiceImplTests {
     TagDTO tagDTO2 = resultList.get(1);
     assertEquals("mathematics", tagDTO1.getTagName());
     assertEquals("sport", tagDTO2.getTagName());
+  }
+
+  @Test
+  public void testCreateTag() {
+    String tagName = "New Tag";
+
+    Tag newTag = new Tag();
+    newTag.setTagName(tagName);
+
+    when(tagRepository.save(any(Tag.class))).thenReturn(newTag);
+
+    // Call the service method to create the tag
+    Tag createdTag = tagService.createTag(tagName);
+
+    assertNotNull(createdTag);
+    assertEquals(tagName, createdTag.getTagName());
+  }
+
+  @Test
+  public void testFindOrCreateTag_TagExists() {
+    String tagName = "Existing Tag";
+
+    Tag existingTag = new Tag();
+    existingTag.setTagName(tagName);
+
+    when(tagRepository.findByTagName(tagName)).thenReturn(Optional.of(existingTag));
+
+    Tag foundOrCreatedTag = tagService.findOrCreateTag(tagName);
+
+    assertNotNull(foundOrCreatedTag);
+    assertEquals(tagName, foundOrCreatedTag.getTagName());
+  }
+
+  @Test
+  public void testFindOrCreateTag_TagDoesNotExist() {
+    String tagName = "New Tag";
+
+    when(tagRepository.findByTagName(tagName)).thenReturn(Optional.empty());
+
+    when(tagRepository.save(any(Tag.class)))
+        .thenAnswer(
+            invocation -> {
+              Tag newTag = invocation.getArgument(0);
+              newTag.setTagId(1L); // Assign a fake ID for the new tag
+              return newTag;
+            });
+
+    Tag foundOrCreatedTag = tagService.findOrCreateTag(tagName);
+
+    assertNotNull(foundOrCreatedTag);
+    assertEquals(tagName, foundOrCreatedTag.getTagName());
   }
 }

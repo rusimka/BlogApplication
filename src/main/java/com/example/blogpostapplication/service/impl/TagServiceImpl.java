@@ -6,6 +6,7 @@ import com.example.blogpostapplication.model.exceptions.RecordNotFoundException;
 import com.example.blogpostapplication.repository.TagRepository;
 import com.example.blogpostapplication.service.TagService;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -46,5 +47,18 @@ public class TagServiceImpl implements TagService {
     return tags.stream()
         .map(tag -> TagDTO.builder().tagName(tag.getTagName()).build())
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public Tag findOrCreateTag(String tagName) {
+    Optional<Tag> tagOptional = tagRepository.findByTagName(tagName);
+
+    return tagOptional.orElseGet(
+        () -> {
+          Tag newTag = new Tag();
+          newTag.setTagName(tagName);
+          logger.info("New tag with name '{}' created", tagName);
+          return tagRepository.save(newTag);
+        });
   }
 }

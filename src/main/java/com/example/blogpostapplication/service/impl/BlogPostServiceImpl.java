@@ -36,13 +36,14 @@ public class BlogPostServiceImpl implements BlogPostService {
     this.userService = userService;
   }
 
-  public BlogPost getBlogPostById(Long blogPostId) {
-    logger.info("Attempting to retrieve blog post with id {}", blogPostId);
-    return blogPostRepository
-        .findById(blogPostId)
+  public BlogPost getBlogPostByIdAndUser(Long blogPostId) {
+    User user = userService.getLoggedUser();
+    return user.getBlogPosts().stream()
+        .filter(blogPost -> blogPost.getBlogPostId().equals(blogPostId))
+        .findFirst()
         .orElseThrow(
             () -> {
-              logger.error("Blog post with ID {} doesn't exists", blogPostId);
+              logger.error("Failed to find   blog post with ID {}. ", blogPostId);
               return new RecordNotFoundException(String.format(EXCEPTION_TEXT, blogPostId));
             });
   }
@@ -79,22 +80,21 @@ public class BlogPostServiceImpl implements BlogPostService {
 
   @Override
   public BlogPost updateBlogPost(Long blogPostId, BlogPostDTO blogPostDTO) {
-    BlogPost updatedBlogPost = getBlogPostById(blogPostId);
-
+    BlogPost blogPostToUpdate = getBlogPostByIdAndUser(blogPostId);
     Optional.ofNullable(blogPostDTO.getBlogPostTitle())
         .ifPresent(
             title -> {
-              updatedBlogPost.setBlogPostTitle(title);
+              blogPostToUpdate.setBlogPostTitle(title);
               logger.info("Updated title of blog post with ID {}: '{}'", blogPostId, title);
             });
 
     Optional.ofNullable(blogPostDTO.getBlogPostText())
         .ifPresent(
             text -> {
-              updatedBlogPost.setBlogPostText(text);
+              blogPostToUpdate.setBlogPostText(text);
               logger.info("Updated text of blog post with ID {}: '{}'", blogPostId, text);
             });
-    return blogPostRepository.save(updatedBlogPost);
+    return blogPostRepository.save(blogPostToUpdate);
   }
 
   @Override
@@ -104,26 +104,27 @@ public class BlogPostServiceImpl implements BlogPostService {
         .orElse(Collections.emptyList());
   }
 
+  // I had to create the functionality 'findOrCreateBTag()', because I couldn't use the
+  // findTagByTagName and
+  // createTag in BlogPostController
   @Override
   public void addTagsToBlogPost(Long blogPostId, TagDTO tagDTO) {
 
-    BlogPost blogPost = getBlogPostById(blogPostId);
+    BlogPost blogPostToUpdate = getBlogPostByIdAndUser(blogPostId);
 
-    Tag newTag = tagService.createTag(tagDTO.getTagName());
+    Tag tag = tagService.findOrCreateTag(tagDTO.getTagName());
 
-    blogPost.getTags().add(newTag);
-    blogPostRepository.save(blogPost);
-    logger.info("Tag '{}' added to blog post with ID {}", newTag.getTagName(), blogPostId);
+    blogPostToUpdate.getTags().add(tag);
+    blogPostRepository.save(blogPostToUpdate);
+    logger.info("Tag '{}' added to blog post with ID {}", tag.getTagName(), blogPostId);
   }
 
   @Override
   public void deleteTagFromBlogPost(Long blogPostId, TagDTO tagDTO) {
-    BlogPost blogPost = getBlogPostById(blogPostId);
-
+    BlogPost blogPostToDelete = getBlogPostByIdAndUser(blogPostId);
     Tag tagToDelete = tagService.findTagByTagName(tagDTO.getTagName());
-
-    blogPost.getTags().remove(tagToDelete);
-    blogPostRepository.save(blogPost);
+    blogPostToDelete.getTags().remove(tagToDelete);
+    blogPostRepository.save(blogPostToDelete);
     logger.info("Tag '{}' removed from blog post with ID {}", tagToDelete.getTagName(), blogPostId);
   }
 
@@ -164,16 +165,7 @@ public class BlogPostServiceImpl implements BlogPostService {
   public void deleteBlogPostByBlogPostId(Long blogPostId) {
 
     User user = userService.getLoggedUser();
-    BlogPost blogPostToDelete =
-        user.getBlogPosts().stream()
-            .filter(blogPost -> blogPost.getBlogPostId().equals(blogPostId))
-            .findFirst()
-            .orElseThrow(
-                () -> {
-                  logger.error(
-                      "Failed to delete blog post with ID {}. Blog post not found.", blogPostId);
-                  return new RecordNotFoundException(String.format(EXCEPTION_TEXT, blogPostId));
-                });
+    BlogPost blogPostToDelete = getBlogPostByIdAndUser(blogPostId);
     user.getBlogPosts().remove(blogPostToDelete);
     blogPostToDelete.setUser(null);
     this.blogPostRepository.deleteById(blogPostId);

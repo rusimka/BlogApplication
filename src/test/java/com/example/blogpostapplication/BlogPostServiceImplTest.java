@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +33,8 @@ class BlogPostServiceImplTest {
   @Mock private TagService tagService;
 
   @Mock private UserService userService;
+
+  @Mock private Logger logger;
 
   @Test
   void testCreateBlogPost() {
@@ -112,8 +115,11 @@ class BlogPostServiceImplTest {
     blogPost.setBlogPostId(blogPostId);
     blogPost.setBlogPostTitle("Original title");
     blogPost.setBlogPostText("Original text");
+    User user = new User();
+    user.setUserId(1L);
+    user.getBlogPosts().add(blogPost);
 
-    when(blogPostRepository.findById(blogPostId)).thenReturn(Optional.of(blogPost));
+    when(userService.getLoggedUser()).thenReturn(user);
     when(blogPostRepository.save(any(BlogPost.class))).thenReturn(blogPost);
 
     BlogPost updatedBlogPost = blogPostService.updateBlogPost(blogPostId, blogPostDTO);
@@ -121,44 +127,54 @@ class BlogPostServiceImplTest {
     assertEquals(blogPostDTO.getBlogPostTitle(), updatedBlogPost.getBlogPostTitle());
     assertEquals(blogPostDTO.getBlogPostText(), updatedBlogPost.getBlogPostText());
 
-    verify(blogPostRepository, times(1)).findById(blogPostId);
     verify(blogPostRepository, times(1)).save(any(BlogPost.class));
   }
 
   @Test
-  void testAddTagsToBlogPost() {
-    Long blogPostId = 1L;
+  public void testAddTagsToBlogPost() {
+    Long blogPostId = 5L;
     String tagName = "Tag Name";
 
+    User user = new User();
+    user.setUserId(1L);
     BlogPost blogPost = new BlogPost();
+    blogPost.setBlogPostId(blogPostId);
+    user.getBlogPosts().add(blogPost);
+
     TagDTO tagDTO = new TagDTO();
     tagDTO.setTagName(tagName);
 
     Tag newTag = new Tag();
     newTag.setTagName(tagName);
 
-    when(blogPostRepository.findById(blogPostId)).thenReturn(Optional.of(blogPost));
-    when(tagService.createTag(tagName)).thenReturn(newTag);
+    when(userService.getLoggedUser()).thenReturn(user);
+    when(tagService.findOrCreateTag(tagName)).thenReturn(newTag);
 
     blogPostService.addTagsToBlogPost(blogPostId, tagDTO);
 
-    verify(blogPostRepository, times(1)).save(blogPost);
     assertTrue(blogPost.getTags().contains(newTag));
+    verify(blogPostRepository, times(1)).save(blogPost);
   }
 
   @Test
   void testDeleteTagFromBlogPost() {
-    Long blogPostId = 1L;
+
+    Long blogPostId = 5L;
     String tagName = "Tag Name";
 
+    User user = new User();
+    user.setUserId(1L);
     BlogPost blogPost = new BlogPost();
+    blogPost.setBlogPostId(blogPostId);
+    user.getBlogPosts().add(blogPost);
+
     TagDTO tagDTO = new TagDTO();
     tagDTO.setTagName(tagName);
 
     Tag tagToDelete = new Tag();
     tagToDelete.setTagName(tagName);
 
-    when(blogPostRepository.findById(blogPostId)).thenReturn(Optional.of(blogPost));
+    when(userService.getLoggedUser()).thenReturn(user);
     when(tagService.findTagByTagName(tagName)).thenReturn(tagToDelete);
 
     blogPostService.deleteTagFromBlogPost(blogPostId, tagDTO);
@@ -202,25 +218,32 @@ class BlogPostServiceImplTest {
   }
 
   @Test
-  void testGetBlogPostById() {
-    Long blogPostId = 1L;
-    BlogPost expectedBlogPost = new BlogPost();
-    expectedBlogPost.setBlogPostId(blogPostId);
+  public void testGetBlogPostByIdAndUser_ExistingBlogPost() {
+    User user = new User();
+    user.setUserId(1L);
 
-    when(blogPostRepository.findById(blogPostId)).thenReturn(Optional.of(expectedBlogPost));
+    BlogPost blogPost = new BlogPost();
+    blogPost.setBlogPostId(1L);
+    when(userService.getLoggedUser()).thenReturn(user);
+    user.getBlogPosts().add(blogPost);
 
-    BlogPost result = blogPostService.getBlogPostById(blogPostId);
+    BlogPost result = blogPostService.getBlogPostByIdAndUser(1L);
 
-    assertEquals(expectedBlogPost, result);
+    assertEquals(blogPost, result);
   }
 
   @Test
-  void testGetBlogPostByIdNotFound() {
-    Long blogPostId = 1L;
+  public void testGetBlogPostByIdAndUser_NonExistingBlogPost() {
+    User user = new User();
+    user.setUserId(1L);
 
-    when(blogPostRepository.findById(blogPostId)).thenReturn(Optional.empty());
+    when(userService.getLoggedUser()).thenReturn(user);
 
-    assertThrows(RecordNotFoundException.class, () -> blogPostService.getBlogPostById(blogPostId));
+    assertThrows(
+        RecordNotFoundException.class,
+        () -> {
+          blogPostService.getBlogPostByIdAndUser(1L);
+        });
   }
 
   @Test
@@ -284,7 +307,4 @@ class BlogPostServiceImplTest {
 
     verify(blogPostRepository, never()).deleteBlogPostsByUserId(anyLong());
   }
-
-
-
 }

@@ -12,4 +12,7 @@ public interface TagService {
   Tag createTag(String tagName);
 
   List<TagDTO> getAllTags();
+
+  Tag findOrCreateTag(String tagName);
+
 }
