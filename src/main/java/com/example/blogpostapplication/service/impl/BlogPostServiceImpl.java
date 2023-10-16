@@ -151,7 +151,7 @@ public class BlogPostServiceImpl implements BlogPostService {
               });
 
       user.getBlogPosts().removeAll(user.getBlogPosts());
-      blogPostRepository.deleteBlogPostsByUserId(user.getUserId());
+      blogPostRepository.deleteByUserUserId(user.getUserId());
       logger.info("All blog posts for user with ID {} have been deleted.", user.getUserId());
 
     } else {

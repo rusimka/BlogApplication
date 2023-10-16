@@ -285,7 +285,7 @@ class BlogPostServiceImplTest {
     when(userService.getLoggedUser()).thenReturn(user);
     blogPostService.deleteAllBlogPostsByUserId();
     assertTrue(user.getBlogPosts().isEmpty());
-    verify(blogPostRepository).deleteBlogPostsByUserId(user.getUserId());
+    verify(blogPostRepository).deleteByUserUserId(user.getUserId());
   }
 
   @Test
@@ -305,6 +305,6 @@ class BlogPostServiceImplTest {
     // Verify that the user's blog posts are still empty
     assertTrue(user.getBlogPosts().isEmpty());
 
-    verify(blogPostRepository, never()).deleteBlogPostsByUserId(anyLong());
+    verify(blogPostRepository, never()).deleteByUserUserId(anyLong());
   }
 }
