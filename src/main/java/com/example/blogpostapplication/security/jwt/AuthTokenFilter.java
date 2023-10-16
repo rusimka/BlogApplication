@@ -1,5 +1,6 @@
 package com.example.blogpostapplication.security.jwt;
 
+import com.example.blogpostapplication.security.services.TokenInvalidationService;
 import com.example.blogpostapplication.security.services.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,6 +25,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
    private final UserDetailsServiceImpl userDetailsService;
 
+   private  TokenInvalidationService tokenInvalidationService;
+
 
   @Override
   protected void doFilterInternal(
@@ -34,8 +37,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     if (jwt != null && JwtUtils.validateJwtToken(jwt)) {
       if (isLogoutRequest(request)) {
-        JwtUtils.invalidateToken(jwt);
-      } else if (!JwtUtils.isTokenInvalidated(jwt)) {
+        tokenInvalidationService.invalidateToken(jwt);
+      } else if (!tokenInvalidationService.isTokenInvalidated(jwt)) {
         String username = JwtUtils.getUserNameFromJwtToken(jwt);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken authentication =
@@ -44,7 +47,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
     } else {
-      logger.debug("JWT token is invalid or missing");
+      logger.info("JWT token is invalid or missing");
     }
 
     filterChain.doFilter(request, response);

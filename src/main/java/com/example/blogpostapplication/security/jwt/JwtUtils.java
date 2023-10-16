@@ -1,7 +1,7 @@
 package com.example.blogpostapplication.security.jwt;
 
 import com.example.blogpostapplication.config.JwtConfigProperties;
-import com.example.blogpostapplication.security.services.UserDetailsInterfaceImpl;
+import com.example.blogpostapplication.security.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import java.util.Date;
 import java.util.HashSet;
@@ -16,10 +16,9 @@ Two functionalities:
 2. Get username from JWT
 3. Validate a jwt
  */
-public class JwtUtils {
+public final class JwtUtils {
 
-  private static final Set<String> invalidatedTokens =
-      new HashSet<>(); // Store invalidated tokens here
+
   private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
   private static JwtConfigProperties jwtConfigProperties;
 
@@ -30,8 +29,8 @@ public class JwtUtils {
   }
 
   public static String generateJwtToken(Authentication authentication) {
-    UserDetailsInterfaceImpl userPrincipal =
-        (UserDetailsInterfaceImpl) authentication.getPrincipal();
+    UserDetailsImpl userPrincipal =
+        (UserDetailsImpl) authentication.getPrincipal();
     String jwtToken =  Jwts.builder()
         .setSubject(userPrincipal.getUsername())
         .setIssuedAt(new Date())
@@ -61,11 +60,5 @@ public class JwtUtils {
     return false;
   }
 
-  public static void invalidateToken(String token) {
-    invalidatedTokens.add(token); // Store the token in the invalidatedTokens set
-  }
 
-  public static boolean isTokenInvalidated(String token) {
-    return invalidatedTokens.contains(token); // Check if token is invalidated
-  }
 }

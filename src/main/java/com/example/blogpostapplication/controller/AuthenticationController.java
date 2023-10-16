@@ -6,7 +6,7 @@ import com.example.blogpostapplication.model.payload.LoginRequest;
 import com.example.blogpostapplication.model.payload.SignupRequest;
 import com.example.blogpostapplication.repository.UserRepository;
 import com.example.blogpostapplication.security.jwt.JwtUtils;
-import com.example.blogpostapplication.security.services.UserDetailsInterfaceImpl;
+import com.example.blogpostapplication.security.services.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
-@Tag(name = "Authenticate user", description = "APIs for register and login the user")
+@Tag(name = "Authenticate user", description = "APIs to register and login the user")
 public class AuthenticationController {
 
   private final AuthenticationManager authenticationManager;
@@ -74,7 +74,7 @@ public class AuthenticationController {
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = JwtUtils.generateJwtToken(authentication);
 
-    UserDetailsInterfaceImpl userDetails = (UserDetailsInterfaceImpl) authentication.getPrincipal();
+    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
     return ResponseEntity.ok(
         new JwtResponse(jwt, userDetails.getUserId(), userDetails.getUsername()));
@@ -85,7 +85,7 @@ public class AuthenticationController {
       description = "Endpoint for user logout",
       summary = "Logout user",
       responses = {
-        @ApiResponse(description = "User logged in successfully", responseCode = "200"),
+        @ApiResponse(description = "User logged out successfully", responseCode = "200"),
       })
   public ResponseEntity<String> logout(HttpServletRequest request) {
     return ResponseEntity.ok("Logout successful");

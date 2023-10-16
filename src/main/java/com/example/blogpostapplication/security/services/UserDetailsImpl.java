@@ -10,7 +10,7 @@ import java.util.List;
 
 // UserDetails is Authentication object containing all necessary information
 
-public class UserDetailsInterfaceImpl implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
   private Long userId;
 
@@ -22,7 +22,7 @@ public class UserDetailsInterfaceImpl implements UserDetails {
 
   private List<BlogPost> blogPosts;
 
-  public UserDetailsInterfaceImpl(
+  public UserDetailsImpl(
       Long userId, String username, String password, String displayName,List<BlogPost> blogPosts) {
     this.userId = userId;
     this.username = username;
@@ -31,8 +31,8 @@ public class UserDetailsInterfaceImpl implements UserDetails {
     this.blogPosts = blogPosts;
   }
 
-  public static UserDetailsInterfaceImpl build(User user) {
-    return new UserDetailsInterfaceImpl(
+  public static UserDetailsImpl build(User user) {
+    return new UserDetailsImpl(
         user.getUserId(), user.getUsername(), user.getPassword(), user.getDisplayName(),user.getBlogPosts());
   }
 

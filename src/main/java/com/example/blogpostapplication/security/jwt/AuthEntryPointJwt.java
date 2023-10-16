@@ -37,8 +37,8 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
     try (var outputStream = response.getOutputStream()) {
       this.objectMapper.writeValue(outputStream, errorResponse);
-    } catch (IOException ex) {
-      logger.error("Unauthorized error : {}", authException.getMessage());
+    } catch (AuthenticationException authenticationException) {
+      logger.error("Unauthorized error : {}", authenticationException.getMessage());
     }
   }
 }

@@ -30,7 +30,7 @@ public class BlogPostController {
       description = "Endpoint for creating blog post",
       summary = "Create Blog Post",
       responses = {
-        @ApiResponse(description = "Successful creation of Blog Post", responseCode = "200"),
+        @ApiResponse(description = "Successful creation of Blog Post", responseCode = "201"),
         @ApiResponse(description = "Unauthorized / Invalid token", responseCode = "401")
       })
   public ResponseEntity<BlogPost> createBlogPost(@RequestBody BlogPostDTO blogPostDTO) {
@@ -55,7 +55,7 @@ public class BlogPostController {
 
   @PatchMapping("/{blogPostId}")
   @Operation(
-      summary = "Update Blog Post by given ID",
+      summary = "Update Blog Post for given ID",
       description = "Update blog post title,or text, or both",
       responses = {
         @ApiResponse(
@@ -74,7 +74,7 @@ public class BlogPostController {
     return ResponseEntity.ok(blogPost);
   }
 
-  @GetMapping("/tags/{tagName}")
+  @GetMapping("/{tagName}")
   @Operation(
       summary = "Get All Blog Posts By Tag Name",
       description = "Endpoint to retrieve a list of all blog posts by given tag name",
@@ -94,7 +94,7 @@ public class BlogPostController {
   @PutMapping("/{blogPostId}/tags")
   @Operation(
       summary = "Add tag to blog post",
-      description = "Endpoint to add tag to blog post by give blog post id",
+      description = "Endpoint to add tag to blog post for a given blog post id",
       responses = {
         @ApiResponse(description = "Successfully added tag to blog", responseCode = "200"),
         @ApiResponse(description = "Unauthorized / Invalid token", responseCode = "401"),
@@ -122,7 +122,7 @@ public class BlogPostController {
     return ResponseEntity.ok("Tag is deleted from the blog post");
   }
 
-  @GetMapping("/users/{userId}")
+  @GetMapping("/users/{userId}/blogPosts")
   @Operation(
       summary = "Get all blog posts for user",
       description = "Endpoint to retrieve a list of blog posts for user with given userId",
@@ -139,10 +139,10 @@ public class BlogPostController {
     return this.blogPostService.getAllBlogPostsByUserId(userId);
   }
 
-  @DeleteMapping("/delete-all")
+  @DeleteMapping
   @Operation(
       summary = "Delete all blog posts for user",
-      description = "Endpoint to delete all blog posts for user by user id",
+      description = "Endpoint to delete all blog posts for the currently logged user",
       responses = {
         @ApiResponse(description = "Successfully deleted all blog posts", responseCode = "200"),
         @ApiResponse(description = "Unauthorized / Invalid token", responseCode = "401"),

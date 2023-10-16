@@ -3,7 +3,7 @@ package com.example.blogpostapplication.service.impl;
 import com.example.blogpostapplication.model.User;
 import com.example.blogpostapplication.model.exceptions.RecordNotFoundException;
 import com.example.blogpostapplication.repository.UserRepository;
-import com.example.blogpostapplication.security.services.UserDetailsInterfaceImpl;
+import com.example.blogpostapplication.security.services.UserDetailsImpl;
 import com.example.blogpostapplication.service.UserService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +25,8 @@ public class UserServiceImpl implements UserService {
         .filter(Authentication::isAuthenticated)
         .map(
             authentication -> {
-              UserDetailsInterfaceImpl userDetails =
-                  (UserDetailsInterfaceImpl) authentication.getPrincipal();
+                UserDetailsImpl userDetails =
+                  (UserDetailsImpl) authentication.getPrincipal();
               return new User(
                   userDetails.getUserId(),
                   userDetails.getUsername(),
