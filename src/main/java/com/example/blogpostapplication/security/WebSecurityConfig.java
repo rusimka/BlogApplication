@@ -67,8 +67,14 @@ public class WebSecurityConfig {
                     .permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
                     .permitAll()
-                    .requestMatchers(new AntPathRequestMatcher("/v3/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()// Allow access to H2 Console
+                    .requestMatchers(new AntPathRequestMatcher("/v3/**"))
+                    .permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**"))
+                    .permitAll() //
+                    .requestMatchers(new AntPathRequestMatcher("localhost:9200"))
+                    .permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/blog-posts-documents/**"))
+                    .permitAll()
                     .anyRequest()
                     .authenticated())
         .headers(
