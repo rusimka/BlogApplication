@@ -1,6 +1,7 @@
 package com.example.blogpostapplication.model.elasticsearch;
 
 import com.example.blogpostapplication.model.Tag;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
@@ -19,9 +20,8 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 public class BlogPostDocument {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
 //  @Field(type=FieldType.Long, name = "blogPostId")
-  private Long blogPostId;
+  private String blogPostId;
 
   @Field(type = FieldType.Text, name = "blogPostTitle")
   private String blogPostTitle;
@@ -29,6 +29,6 @@ public class BlogPostDocument {
   @Field(type = FieldType.Text, name = "blogPostText")
   private String blogPostText;
 
-  @Field(type = FieldType.Nested, includeInParent = true)
-  private List<Tag> tags = new ArrayList<>();
+  @Field(type = FieldType.Keyword)
+  private List<String> tags = new ArrayList<>();
 }

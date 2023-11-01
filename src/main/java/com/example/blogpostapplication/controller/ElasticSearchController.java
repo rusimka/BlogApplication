@@ -2,14 +2,11 @@ package com.example.blogpostapplication.controller;
 
 import com.example.blogpostapplication.model.elasticsearch.BlogPostDocument;
 import com.example.blogpostapplication.service.ElasticSearchService;
-import jakarta.websocket.server.PathParam;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/blog-posts-documents")
@@ -22,6 +19,26 @@ public class ElasticSearchController {
   public ResponseEntity<BlogPostDocument> createBlogPost(
       @RequestBody BlogPostDocument blogPostDocument) {
     return ResponseEntity.ok(elasticSearchService.createBlogPostDocument(blogPostDocument));
+  }
+
+  @DeleteMapping
+  public void deleteAllBlogPostDocuments() {
+    this.elasticSearchService.deleteAll();
+  }
+
+  @GetMapping
+  public List<BlogPostDocument> searchByBlogPostTitle(@RequestParam(name = "blogPostTitle") String blogPostTitle){
+    return elasticSearchService.searchBlogPostByBlogPostTitle(blogPostTitle);
+}
+
+  @GetMapping("/search-by-text")
+  public List<BlogPostDocument> searchByBlogPostText(@RequestParam(name = "blogPostText") String blogPostText){
+    return elasticSearchService.searchBlogPostByBlogPostText(blogPostText);
+  }
+
+  @GetMapping("/search-by-tags")
+  public List<BlogPostDocument> searchBlogPostByTag(@RequestParam(name = "tag") String tag){
+    return elasticSearchService.searchBlogPostByTag(tag);
   }
 
 }

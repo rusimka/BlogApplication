@@ -1,5 +1,7 @@
 package com.example.blogpostapplication.service.impl;
 
+import com.example.blogpostapplication.model.BlogPost;
+import com.example.blogpostapplication.model.dto.BlogPostDTO;
 import com.example.blogpostapplication.model.elasticsearch.BlogPostDocument;
 import com.example.blogpostapplication.nosqlrepository.elasticsearch.BlogPostDocumentRepository;
 import com.example.blogpostapplication.service.ElasticSearchService;
@@ -22,9 +24,31 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     BlogPostDocument blogPostDocument1 = new BlogPostDocument();
     blogPostDocument1.setBlogPostTitle(blogPostDocument.getBlogPostTitle());
     blogPostDocument1.setBlogPostText(blogPostDocument.getBlogPostText());
+    blogPostDocument1.setTags(blogPostDocument.getTags());
     log.info("New blog post created with title: '{}'", blogPostDocument1.getBlogPostTitle());
     //        return this.blogPostRepository.save(blogPost);
     return this.blogPostDocumentRepository.save(blogPostDocument1);
+  }
+
+  @Override
+  public void deleteAll() {
+    this.blogPostDocumentRepository.deleteAll();
+
+  }
+
+  @Override
+  public List<BlogPostDocument> searchBlogPostByBlogPostTitle(String blogPostTitle) {
+    return this.blogPostDocumentRepository.findByBlogPostTitle(blogPostTitle);
+  }
+
+  @Override
+  public List<BlogPostDocument> searchBlogPostByBlogPostText(String blogPostText) {
+    return this.blogPostDocumentRepository.findByBlogPostText(blogPostText);
+  }
+
+  @Override
+  public List<BlogPostDocument> searchBlogPostByTag(String tag) {
+    return this.blogPostDocumentRepository.findByTags(tag);
   }
 
 }

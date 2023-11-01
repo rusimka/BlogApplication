@@ -9,5 +9,16 @@ public interface ElasticSearchService {
 
     BlogPostDocument createBlogPostDocument(BlogPostDocument blogPostDocument);
 
+    void deleteAll();
+
+    List<BlogPostDocument> searchBlogPostByBlogPostTitle(String blogPostTitle);
+
+    List<BlogPostDocument> searchBlogPostByBlogPostText(String blogPostText);
+
+    List<BlogPostDocument> searchBlogPostByTag(String tag);
+
+
+
+
 
 }
