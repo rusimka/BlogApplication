@@ -15,4 +15,6 @@ public interface BlogPostDocumentRepository extends ElasticsearchRepository<Blog
 
     List<BlogPostDocument> findByTags(String tag);
 
+    List<BlogPostDocument> findByBlogPostTitleAndBlogPostTextAndTags(String blogPostTitle,String blogPostText,String tag);
+
 }

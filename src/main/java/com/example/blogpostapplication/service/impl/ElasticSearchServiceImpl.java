@@ -1,15 +1,12 @@
 package com.example.blogpostapplication.service.impl;
 
-import com.example.blogpostapplication.model.BlogPost;
-import com.example.blogpostapplication.model.dto.BlogPostDTO;
 import com.example.blogpostapplication.model.elasticsearch.BlogPostDocument;
 import com.example.blogpostapplication.nosqlrepository.elasticsearch.BlogPostDocumentRepository;
 import com.example.blogpostapplication.service.ElasticSearchService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @Slf4j
@@ -17,7 +14,6 @@ import java.util.List;
 public class ElasticSearchServiceImpl implements ElasticSearchService {
 
   private final BlogPostDocumentRepository blogPostDocumentRepository;
-
 
   @Override
   public BlogPostDocument createBlogPostDocument(BlogPostDocument blogPostDocument) {
@@ -33,7 +29,6 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
   @Override
   public void deleteAll() {
     this.blogPostDocumentRepository.deleteAll();
-
   }
 
   @Override
@@ -51,4 +46,10 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     return this.blogPostDocumentRepository.findByTags(tag);
   }
 
+  @Override
+  public List<BlogPostDocument> searchBlogPostByBlogPostTitleAndBlogPostTextAndTag(
+      String blogPostTitle, String blogPostText, String tag) {
+    return this.blogPostDocumentRepository.findByBlogPostTitleAndBlogPostTextAndTags(
+        blogPostTitle, blogPostText, tag);
+  }
 }

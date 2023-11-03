@@ -17,6 +17,8 @@ public interface ElasticSearchService {
 
     List<BlogPostDocument> searchBlogPostByTag(String tag);
 
+    List<BlogPostDocument> searchBlogPostByBlogPostTitleAndBlogPostTextAndTag(String blogPostTitle, String blogPostText, String tag);
+
 
 
 
