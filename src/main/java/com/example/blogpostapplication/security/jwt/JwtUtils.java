@@ -4,8 +4,6 @@ import com.example.blogpostapplication.config.JwtConfigProperties;
 import com.example.blogpostapplication.security.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -19,7 +17,7 @@ Two functionalities:
 public final class JwtUtils {
 
 
-  private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
+  private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
   private static JwtConfigProperties jwtConfigProperties;
 
   private JwtUtils() {}
@@ -37,7 +35,7 @@ public final class JwtUtils {
         .setExpiration(new Date(new Date().getTime() + jwtConfigProperties.getJwtExpirationMs()))
         .signWith(SignatureAlgorithm.HS512, jwtConfigProperties.getJwtSecret())
         .compact();
-    System.out.println(jwtToken);
+    logger.info(jwtToken);
     return jwtToken;
   }
 

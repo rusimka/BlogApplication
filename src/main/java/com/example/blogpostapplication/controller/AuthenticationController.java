@@ -43,7 +43,7 @@ public class AuthenticationController {
         @ApiResponse(description = "Username already exists", responseCode = "400")
       })
   public ResponseEntity<String> registerUser(@RequestBody SignupRequest signupRequest) {
-    if (userRepository.existsByUsername(signupRequest.getUsername())) {
+    if (Boolean.TRUE.equals(userRepository.existsByUsername(signupRequest.getUsername()))) {
       return ResponseEntity.badRequest().body("Username already taken");
     }
 
@@ -64,7 +64,8 @@ public class AuthenticationController {
         @ApiResponse(description = "User logged in successfully", responseCode = "200"),
         @ApiResponse(description = "Wrong Credentials", responseCode = "400")
       })
-  public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+  public ResponseEntity<JwtResponse> authenticateUser(
+      @Valid @RequestBody LoginRequest loginRequest) {
 
     Authentication authentication =
         authenticationManager.authenticate(

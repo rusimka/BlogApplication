@@ -12,6 +12,8 @@ import java.util.List;
 @Data
 public class BlogPost {
 
+  private static final long serialVersionUID = 1L;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long blogPostId;

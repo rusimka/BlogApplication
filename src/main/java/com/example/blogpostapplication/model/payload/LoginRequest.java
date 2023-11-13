@@ -1,7 +1,6 @@
 package com.example.blogpostapplication.model.payload;
 
 import jakarta.validation.constraints.NotBlank;
-import jdk.jfr.DataAmount;
 
 public class LoginRequest {
 

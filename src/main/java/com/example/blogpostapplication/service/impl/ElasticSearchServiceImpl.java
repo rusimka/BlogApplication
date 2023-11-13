@@ -22,7 +22,6 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     blogPostDocument1.setBlogPostText(blogPostDocument.getBlogPostText());
     blogPostDocument1.setTags(blogPostDocument.getTags());
     log.info("New blog post created with title: '{}'", blogPostDocument1.getBlogPostTitle());
-    //        return this.blogPostRepository.save(blogPost);
     return this.blogPostDocumentRepository.save(blogPostDocument1);
   }
 

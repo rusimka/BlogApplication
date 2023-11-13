@@ -6,6 +6,8 @@ import java.util.Set;
 public class TokenInvalidationService {
   private static final Set<String> invalidatedTokens = new HashSet<>();
 
+  private TokenInvalidationService(){}
+
   public static void invalidateToken(String token) {
     invalidatedTokens.add(token); // Store the token in the invalidatedTokens set
   }

@@ -1,7 +1,6 @@
 package com.example.blogpostapplication.model.payload;
 
 
-import java.util.List;
 
 // JwtResponse is send after the user is logged, with jwt token
 public class JwtResponse {

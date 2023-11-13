@@ -7,7 +7,6 @@ import com.example.blogpostapplication.repository.TagRepository;
 import com.example.blogpostapplication.service.TagService;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +45,7 @@ public class TagServiceImpl implements TagService {
     List<Tag> tags = this.tagRepository.findAll();
     return tags.stream()
         .map(tag -> TagDTO.builder().tagName(tag.getTagName()).build())
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Override

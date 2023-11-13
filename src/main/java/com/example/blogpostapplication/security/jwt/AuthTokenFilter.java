@@ -7,10 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,11 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
 
-
-   private final UserDetailsServiceImpl userDetailsService;
-
-   private  TokenInvalidationService tokenInvalidationService;
-
+  private final UserDetailsServiceImpl userDetailsService;
 
   @Override
   protected void doFilterInternal(
@@ -37,8 +30,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     if (jwt != null && JwtUtils.validateJwtToken(jwt)) {
       if (isLogoutRequest(request)) {
-        tokenInvalidationService.invalidateToken(jwt);
-      } else if (!tokenInvalidationService.isTokenInvalidated(jwt)) {
+        TokenInvalidationService.invalidateToken(jwt);
+      } else if (!TokenInvalidationService.isTokenInvalidated(jwt)) {
         String username = JwtUtils.getUserNameFromJwtToken(jwt);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken authentication =
@@ -51,7 +44,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     }
 
     filterChain.doFilter(request, response);
-
   }
 
   public String parseJwt(HttpServletRequest request) {

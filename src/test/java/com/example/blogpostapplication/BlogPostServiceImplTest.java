@@ -21,6 +21,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,7 +62,6 @@ class BlogPostServiceImplTest {
 
   @Test
   void getAllBlogPosts() {
-
     BlogPost blogPost1 = new BlogPost();
     blogPost1.setBlogPostTitle("Blog Post 1");
     blogPost1.setBlogPostText("Blog Post 1 text");
@@ -70,15 +72,18 @@ class BlogPostServiceImplTest {
 
     List<BlogPost> mockedBlogPosts = Arrays.asList(blogPost1, blogPost2);
 
-    when(blogPostRepository.findAll()).thenReturn(mockedBlogPosts);
+    PageRequest pageRequest = PageRequest.of(0, 10);
+    Page<BlogPost> mockedPage = new PageImpl<>(mockedBlogPosts, pageRequest, mockedBlogPosts.size());
 
-    List<BlogPostDTO> resultList = blogPostService.getAllBlogPosts();
+    when(blogPostRepository.findAll(pageRequest)).thenReturn(mockedPage);
 
-    verify(blogPostRepository).findAll();
-    assertEquals(2, resultList.size());
+    Page<BlogPostDTO> resultPage = blogPostService.getAllBlogPosts(0, 10);
 
-    BlogPostDTO blogPostDTO1 = resultList.get(0);
-    BlogPostDTO blogPostDTO2 = resultList.get(1);
+    verify(blogPostRepository).findAll(pageRequest);
+    assertEquals(2, resultPage.getTotalElements());
+
+    BlogPostDTO blogPostDTO1 = resultPage.getContent().get(0);
+    BlogPostDTO blogPostDTO2 = resultPage.getContent().get(1);
     assertEquals("Blog Post 1", blogPostDTO1.getBlogPostTitle());
     assertEquals("Blog Post 2", blogPostDTO2.getBlogPostTitle());
   }

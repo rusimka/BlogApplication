@@ -3,13 +3,14 @@ package com.example.blogpostapplication.service;
 import com.example.blogpostapplication.model.BlogPost;
 import com.example.blogpostapplication.model.dto.BlogPostDTO;
 import com.example.blogpostapplication.model.dto.TagDTO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface BlogPostService {
   BlogPost createBlogPost(BlogPostDTO blogPostDTO);
 
-  List<BlogPostDTO> getAllBlogPosts();
+  Page<BlogPostDTO> getAllBlogPosts(int page,int size);
 
   BlogPost updateBlogPost(Long blogPostId, BlogPostDTO blogPostDTO);
 

@@ -15,6 +15,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -59,10 +62,11 @@ public class BlogPostServiceImpl implements BlogPostService {
   }
 
   @Override
-  public List<BlogPostDTO> getAllBlogPosts() {
+  public Page<BlogPostDTO> getAllBlogPosts(int page, int size) {
     logger.info("Attempting to retrieve all blog posts");
-    List<BlogPost> allBlogPosts = blogPostRepository.findAll();
-    return allBlogPosts.stream().map(this::mapToSimplifiedDTO).toList();
+    Pageable pageable = PageRequest.of(page, size);
+    Page<BlogPost> blogPostsPage = blogPostRepository.findAll(pageable);
+    return blogPostsPage.map(this::mapToSimplifiedDTO);
   }
 
   public BlogPostDTO mapToSimplifiedDTO(BlogPost blogPost) {
